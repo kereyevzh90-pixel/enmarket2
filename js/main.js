@@ -21,12 +21,56 @@ document.getElementById('searchInput').addEventListener('input', e => {
   ) : applyFiltersResult());
 });
 
-/* ===================== FILTERS ===================== */
-function toggleFilters() {
-  document.getElementById('filtersPanel').classList.toggle('open');
+/* ===================== SIDEBAR CATS ===================== */
+function toggleScat(el) {
+  el.classList.toggle('open');
+  el.nextElementSibling.classList.toggle('open');
 }
 
+function filterSubcat(cat, subcat) {
+  activeCat = cat;
+  activeSubcat = subcat;
+  document.getElementById('catalogTitle').textContent = subcat;
+  renderGrid(applyFiltersResult());
+  document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+  return false;
+}
+
+/* ===================== TABS ===================== */
+function setTab(btn, val) {
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const titles = { '': 'Все товары', new: 'Новинки', sale: 'Скидки', women: 'Женщинам', men: 'Мужчинам', kids: 'Детям' };
+  document.getElementById('catalogTitle').textContent = titles[val] || 'Все товары';
+  activeCat = val;
+  activeSubcat = '';
+  renderGrid(applyFiltersResult());
+}
+
+/* ===================== DROPDOWNS ===================== */
+function toggleDropdown(id) {
+  const el = document.getElementById(id);
+  const isOpen = el.classList.contains('open');
+  closeDropdowns();
+  if (!isOpen) {
+    el.classList.add('open');
+    el.previousElementSibling.classList.add('active');
+  }
+}
+function closeDropdowns() {
+  document.querySelectorAll('.hfilter-drop').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.hfilter-btn').forEach(b => b.classList.remove('active'));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.hfilter-group')) closeDropdowns();
+});
+
+/* ===================== FILTERS ===================== */
+
 let selectedSizes = [];
+let activeCat = '';
+let activeSubcat = '';
+
 function toggleSize(btn, size) {
   btn.classList.toggle('active');
   selectedSizes = selectedSizes.includes(size)
@@ -38,12 +82,14 @@ function toggleSize(btn, size) {
 function applyFilters() { renderGrid(applyFiltersResult()); }
 
 function applyFiltersResult() {
-  const cat      = document.querySelector('input[name="cat"]:checked')?.value || '';
   const minPrice = Number(document.getElementById('priceMin').value) || 0;
   const maxPrice = Number(document.getElementById('priceMax').value) || Infinity;
 
   return allProducts.filter(p => {
-    if (cat && p.category !== cat) return false;
+    if (activeCat === 'new')  return p.badge === 'Новинка';
+    if (activeCat === 'sale') return !!p.oldPrice;
+    if (activeCat && p.category !== activeCat) return false;
+    if (activeSubcat && !(p.subcategory || '').includes(activeSubcat) && !(p.name || '').includes(activeSubcat)) return false;
     if (p.price < minPrice || p.price > maxPrice) return false;
     if (selectedSizes.length && !selectedSizes.some(s => (p.sizes||[]).includes(s))) return false;
     return true;
@@ -60,21 +106,28 @@ function applySort(val) {
 }
 
 function filterCat(cat) {
-  document.querySelectorAll('input[name="cat"]').forEach(r => { r.checked = r.value === cat; });
+  activeCat = cat;
+  activeSubcat = '';
   const titles = { women: 'Женщинам', men: 'Мужчинам', kids: 'Детям', sale: 'Распродажа', '': 'Все товары' };
   document.getElementById('catalogTitle').textContent = titles[cat] || 'Все товары';
+  document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
+  const tab = [...document.querySelectorAll('.ctab')].find(b => b.getAttribute('onclick').includes(`'${cat}'`));
+  if (tab) tab.classList.add('active');
   applyFilters();
   document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
   return false;
 }
 
 function resetFilters() {
-  document.querySelector('input[name="cat"][value=""]').checked = true;
+  activeCat = '';
+  activeSubcat = '';
+  selectedSizes = [];
   document.getElementById('priceMin').value = '';
   document.getElementById('priceMax').value = '';
-  selectedSizes = [];
   document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.ctab').forEach((b,i) => b.classList.toggle('active', i === 0));
   document.getElementById('catalogTitle').textContent = 'Все товары';
+  closeDropdowns();
   renderGrid(allProducts);
 }
 

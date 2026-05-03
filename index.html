@@ -128,95 +128,130 @@
     </div>
   </header>
 
-  <!-- CATEGORIES -->
-  <section class="cats">
-    <div class="container cats__grid">
-      <a href="#" class="cat-card cat-card--women" onclick="filterCat('women')">
-        <div class="cat-card__overlay"></div>
-        <div class="cat-card__body">
-          <h3>Женщинам</h3>
-          <span>Смотреть →</span>
-        </div>
-      </a>
-      <a href="#" class="cat-card cat-card--men" onclick="filterCat('men')">
-        <div class="cat-card__overlay"></div>
-        <div class="cat-card__body">
-          <h3>Мужчинам</h3>
-          <span>Смотреть →</span>
-        </div>
-      </a>
-      <a href="#" class="cat-card cat-card--kids" onclick="filterCat('kids')">
-        <div class="cat-card__overlay"></div>
-        <div class="cat-card__body">
-          <h3>Детям</h3>
-          <span>Смотреть →</span>
-        </div>
-      </a>
-      <a href="#" class="cat-card cat-card--sale" onclick="filterCat('sale')">
-        <div class="cat-card__overlay"></div>
-        <div class="cat-card__body">
-          <h3>Распродажа</h3>
-          <span>До −70% →</span>
-        </div>
-      </a>
-    </div>
-  </section>
-
   <!-- CATALOG -->
   <section class="catalog" id="catalog">
     <div class="container catalog__inner">
 
-      <!-- Sidebar filters -->
-      <aside class="filters-panel" id="filtersPanel">
-        <div class="filter-block">
-          <h4>Категория</h4>
-          <label class="fcheck"><input type="radio" name="cat" value="" checked onchange="applyFilters()" /> Все</label>
-          <label class="fcheck"><input type="radio" name="cat" value="women" onchange="applyFilters()" /> Женщинам</label>
-          <label class="fcheck"><input type="radio" name="cat" value="men" onchange="applyFilters()" /> Мужчинам</label>
-          <label class="fcheck"><input type="radio" name="cat" value="kids" onchange="applyFilters()" /> Детям</label>
+      <!-- LEFT SIDEBAR -->
+      <aside class="sidebar-cats">
+        <div class="scat-block">
+          <div class="scat-title" onclick="filterCat('')">Все товары</div>
         </div>
-        <div class="filter-block">
-          <h4>Цена, ₸</h4>
-          <div class="price-range">
-            <input type="number" id="priceMin" placeholder="от" onchange="applyFilters()" />
-            <span>—</span>
-            <input type="number" id="priceMax" placeholder="до" onchange="applyFilters()" />
+        <div class="scat-block">
+          <div class="scat-group" onclick="toggleScat(this)">
+            Женщинам <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="scat-children open">
+            <a href="#" onclick="filterCat('women')">Вся одежда</a>
+            <a href="#" onclick="filterSubcat('women','Платья')">Платья</a>
+            <a href="#" onclick="filterSubcat('women','Блузки')">Блузки и рубашки</a>
+            <a href="#" onclick="filterSubcat('women','Джинсы')">Джинсы</a>
+            <a href="#" onclick="filterSubcat('women','Юбки')">Юбки</a>
+            <a href="#" onclick="filterSubcat('women','Пальто')">Пальто и куртки</a>
+            <a href="#" onclick="filterSubcat('women','Свитеры')">Свитеры и кардиганы</a>
+            <a href="#" onclick="filterSubcat('women','Обувь')">Обувь</a>
+            <a href="#" onclick="filterSubcat('women','Сумки')">Сумки</a>
           </div>
         </div>
-        <div class="filter-block">
-          <h4>Размер</h4>
-          <div class="size-grid" id="sizeFilter">
-            <button class="size-btn" onclick="toggleSize(this,'XS')">XS</button>
-            <button class="size-btn" onclick="toggleSize(this,'S')">S</button>
-            <button class="size-btn" onclick="toggleSize(this,'M')">M</button>
-            <button class="size-btn" onclick="toggleSize(this,'L')">L</button>
-            <button class="size-btn" onclick="toggleSize(this,'XL')">XL</button>
-            <button class="size-btn" onclick="toggleSize(this,'XXL')">XXL</button>
+        <div class="scat-block">
+          <div class="scat-group" onclick="toggleScat(this)">
+            Мужчинам <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="scat-children">
+            <a href="#" onclick="filterCat('men')">Вся одежда</a>
+            <a href="#" onclick="filterSubcat('men','Футболки')">Футболки и поло</a>
+            <a href="#" onclick="filterSubcat('men','Джинсы')">Джинсы</a>
+            <a href="#" onclick="filterSubcat('men','Куртки')">Куртки</a>
+            <a href="#" onclick="filterSubcat('men','Костюмы')">Костюмы</a>
+            <a href="#" onclick="filterSubcat('men','Обувь')">Обувь</a>
           </div>
         </div>
-        <button class="btn btn--outline" onclick="resetFilters()" style="width:100%;justify-content:center">Сбросить фильтры</button>
+        <div class="scat-block">
+          <div class="scat-group" onclick="toggleScat(this)">
+            Детям <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="scat-children">
+            <a href="#" onclick="filterCat('kids')">Всё для детей</a>
+            <a href="#" onclick="filterSubcat('kids','Девочкам')">Девочкам</a>
+            <a href="#" onclick="filterSubcat('kids','Мальчикам')">Мальчикам</a>
+          </div>
+        </div>
+        <div class="scat-block">
+          <div class="scat-title scat-sale" onclick="filterCat('sale')">Распродажа</div>
+        </div>
       </aside>
 
-      <!-- Products -->
+      <!-- RIGHT CONTENT -->
       <div class="catalog__right">
-        <div class="catalog__toolbar">
-          <div class="catalog__title-row">
-            <h2 id="catalogTitle">Все товары</h2>
-            <span class="catalog__count" id="catalogCount"></span>
-          </div>
-          <div class="catalog__sort">
-            <select onchange="applySort(this.value)">
-              <option value="">По умолчанию</option>
-              <option value="price-asc">Сначала дешевле</option>
-              <option value="price-desc">Сначала дороже</option>
-              <option value="new">Новинки</option>
-              <option value="sale">Скидки</option>
-            </select>
-            <button class="filter-toggle-btn" onclick="toggleFilters()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="20" y2="12"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
-              Фильтры
+
+        <!-- Title -->
+        <div class="catalog__head">
+          <h2 id="catalogTitle">Все товары</h2>
+          <span class="catalog__count" id="catalogCount"></span>
+        </div>
+
+        <!-- Sub-tabs -->
+        <div class="catalog__tabs">
+          <button class="ctab active" onclick="setTab(this,'')">Все</button>
+          <button class="ctab" onclick="setTab(this,'new')">Новинки</button>
+          <button class="ctab" onclick="setTab(this,'sale')">Скидки</button>
+          <button class="ctab" onclick="setTab(this,'women')">Женщинам</button>
+          <button class="ctab" onclick="setTab(this,'men')">Мужчинам</button>
+          <button class="ctab" onclick="setTab(this,'kids')">Детям</button>
+        </div>
+
+        <!-- Horizontal filters -->
+        <div class="hfilters">
+          <div class="hfilter-group" id="hfSize">
+            <button class="hfilter-btn" onclick="toggleDropdown('dropSize')">
+              Размер <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
+            <div class="hfilter-drop" id="dropSize">
+              <div class="hfilter-sizes">
+                <button class="size-btn" onclick="toggleSize(this,'XS')">XS</button>
+                <button class="size-btn" onclick="toggleSize(this,'S')">S</button>
+                <button class="size-btn" onclick="toggleSize(this,'M')">M</button>
+                <button class="size-btn" onclick="toggleSize(this,'L')">L</button>
+                <button class="size-btn" onclick="toggleSize(this,'XL')">XL</button>
+                <button class="size-btn" onclick="toggleSize(this,'XXL')">XXL</button>
+                <button class="size-btn" onclick="toggleSize(this,'36')">36</button>
+                <button class="size-btn" onclick="toggleSize(this,'37')">37</button>
+                <button class="size-btn" onclick="toggleSize(this,'38')">38</button>
+                <button class="size-btn" onclick="toggleSize(this,'39')">39</button>
+                <button class="size-btn" onclick="toggleSize(this,'40')">40</button>
+                <button class="size-btn" onclick="toggleSize(this,'41')">41</button>
+              </div>
+            </div>
           </div>
+
+          <div class="hfilter-group">
+            <button class="hfilter-btn" onclick="toggleDropdown('dropPrice')">
+              Цена <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hfilter-drop" id="dropPrice">
+              <div class="price-range">
+                <input type="number" id="priceMin" placeholder="от" oninput="applyFilters()" />
+                <span>—</span>
+                <input type="number" id="priceMax" placeholder="до" oninput="applyFilters()" />
+              </div>
+            </div>
+          </div>
+
+          <div class="hfilter-group">
+            <button class="hfilter-btn" onclick="toggleDropdown('dropSort')">
+              Сортировка <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hfilter-drop" id="dropSort">
+              <div class="sort-list">
+                <button onclick="applySort('');closeDropdowns()">По умолчанию</button>
+                <button onclick="applySort('price-asc');closeDropdowns()">Сначала дешевле</button>
+                <button onclick="applySort('price-desc');closeDropdowns()">Сначала дороже</button>
+                <button onclick="applySort('new');closeDropdowns()">Новинки</button>
+              </div>
+            </div>
+          </div>
+
+          <button class="hfilter-reset" onclick="resetFilters()">Сбросить</button>
         </div>
 
         <!-- Empty state -->
