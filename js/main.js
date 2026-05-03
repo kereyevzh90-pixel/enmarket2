@@ -21,6 +21,15 @@ document.getElementById('searchInput').addEventListener('input', e => {
   ) : applyFiltersResult());
 });
 
+function selectCatFilter(cat, label) {
+  document.getElementById('catFilterLabel').textContent = label;
+  const btn = document.getElementById('catFilterBtn');
+  btn.classList.toggle('active', cat !== '');
+  filterCat(cat);
+  closeDropdowns();
+  updateResetBtn();
+}
+
 /* ===================== SIDEBAR CATS ===================== */
 function toggleScat(el) {
   el.classList.toggle('open');
@@ -176,6 +185,8 @@ function resetFilters() {
   document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('saleToggle').classList.remove('active');
+  document.getElementById('catFilterLabel').textContent = 'Категория';
+  document.getElementById('catFilterBtn').classList.remove('active');
   document.querySelectorAll('.ctab').forEach((b,i) => b.classList.toggle('active', i === 0));
   document.getElementById('catalogTitle').textContent = 'Все товары';
   document.getElementById('resetBtn').style.display = 'none';

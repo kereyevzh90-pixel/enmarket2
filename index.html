@@ -203,15 +203,15 @@
         <!-- Horizontal filters -->
         <div class="hfilters">
           <div class="hfilter-group">
-            <button class="hfilter-btn" onclick="toggleDropdown('dropCat')">
-              Категория <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <button class="hfilter-btn" id="catFilterBtn" onclick="toggleDropdown('dropCat')">
+              <span id="catFilterLabel">Категория</span> <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="hfilter-drop" id="dropCat">
               <div class="sort-list">
-                <button onclick="filterCat('');closeDropdowns()">Все</button>
-                <button onclick="filterCat('women');closeDropdowns()">Женщинам</button>
-                <button onclick="filterCat('men');closeDropdowns()">Мужчинам</button>
-                <button onclick="filterCat('kids');closeDropdowns()">Детям</button>
+                <button onclick="selectCatFilter('','Категория')">Все</button>
+                <button onclick="selectCatFilter('women','Женщинам')">Женщинам</button>
+                <button onclick="selectCatFilter('men','Мужчинам')">Мужчинам</button>
+                <button onclick="selectCatFilter('kids','Детям')">Детям</button>
               </div>
             </div>
           </div>
