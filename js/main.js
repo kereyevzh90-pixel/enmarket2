@@ -12,11 +12,6 @@ document.querySelectorAll('.nav__item').forEach(l => {
 });
 
 /* ===================== SEARCH ===================== */
-function toggleSearch() {
-  const d = document.getElementById('searchDrop');
-  d.classList.toggle('open');
-  if (d.classList.contains('open')) document.getElementById('searchInput').focus();
-}
 document.getElementById('searchInput').addEventListener('input', e => {
   const q = e.target.value.trim().toLowerCase();
   renderGrid(q ? allProducts.filter(p =>

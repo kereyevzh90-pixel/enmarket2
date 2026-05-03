@@ -34,7 +34,7 @@ function saveSetup() {
   if (password.length < 4) { err.textContent = 'Пароль должен быть минимум 4 символа'; return; }
 
   localStorage.setItem('em_token', token);
-  localStorage.setItem('em_password', btoa(password));
+  localStorage.setItem('em_password', btoa(unescape(encodeURIComponent(password))));
   err.textContent = '';
   enterAdmin();
 }
@@ -48,7 +48,7 @@ function resetSetup() {
 /* ===================== LOGIN ===================== */
 function login() {
   const input    = document.getElementById('loginPassword').value;
-  const stored   = atob(localStorage.getItem('em_password') || '');
+  const stored   = decodeURIComponent(escape(atob(localStorage.getItem('em_password') || '')));
   const err      = document.getElementById('loginError');
 
   if (input === stored) {

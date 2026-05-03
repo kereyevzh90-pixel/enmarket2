@@ -127,34 +127,40 @@ img { max-width: 100%; display: block; }
 .burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 4px; }
 .burger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: .25s; }
 
-/* Search drop */
-.search-drop {
-  display: none;
+/* Main search bar */
+.header__search {
   border-top: 1px solid var(--border);
-  padding: 14px 0;
+  padding: 12px 0;
   background: #fff;
 }
-.search-drop.open { display: block; }
-.search-drop__inner {
+.main-search {
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto;
-  padding: 0 20px;
+  height: 48px;
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  padding: 0 18px;
+  transition: border-color .2s;
 }
-.search-drop__inner svg { color: var(--muted); flex-shrink: 0; }
-.search-drop__inner input {
+.main-search:focus-within {
+  border-color: var(--text);
+  background: #fff;
+}
+.main-search svg { color: var(--muted); flex-shrink: 0; }
+.main-search input {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 15px;
   font-family: inherit;
+  background: transparent;
+  color: var(--text);
 }
-.search-drop__inner button {
-  background: none; border: none; cursor: pointer;
-  font-size: 18px; color: var(--muted); padding: 4px;
-}
+.main-search input::placeholder { color: var(--muted); }
 
 /* ===================== HERO ===================== */
 .hero { position: relative; overflow: hidden; }
