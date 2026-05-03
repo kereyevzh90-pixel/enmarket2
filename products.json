@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "id": "mopmtvhf16fnk",
+    "name": "тест",
+    "brand": "тест",
+    "price": 4555,
+    "oldPrice": 554554,
+    "description": "",
+    "category": "men",
+    "sizes": [
+      "36"
+    ],
+    "badge": null,
+    "image": "",
+    "inStock": true
+  }
+]
