@@ -1,17 +1,1 @@
-[
-  {
-    "id": "mopk591vki7mw",
-    "name": "тест",
-    "brand": "тест",
-    "price": 0,
-    "oldPrice": null,
-    "description": "тест",
-    "category": "men",
-    "sizes": [
-      "36"
-    ],
-    "badge": null,
-    "image": "",
-    "inStock": true
-  }
-]
+[]
