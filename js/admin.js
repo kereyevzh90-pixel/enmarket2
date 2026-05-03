@@ -219,13 +219,18 @@ async function saveProduct(e) {
   const id     = document.getElementById('editId').value;
   const isEdit = !!id;
 
+  const sizesRaw = document.getElementById('fSizes').value;
+  const sizes = sizesRaw ? sizesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+
   const product = {
     id:       id || uid(),
     name:     document.getElementById('fName').value.trim(),
+    brand:    document.getElementById('fBrand').value.trim() || null,
     price:    Number(document.getElementById('fPrice').value),
     oldPrice: Number(document.getElementById('fOldPrice').value) || null,
     description: document.getElementById('fDesc').value.trim(),
-    category: document.getElementById('fCategory').value.trim(),
+    category: document.getElementById('fCategory').value,
+    sizes,
     badge:    document.getElementById('fBadge').value || null,
     image:    document.getElementById('fImage').value.trim(),
     inStock:  document.getElementById('fInStock').checked,
@@ -262,10 +267,12 @@ function editProduct(id) {
 
   document.getElementById('editId').value          = p.id;
   document.getElementById('fName').value           = p.name;
+  document.getElementById('fBrand').value          = p.brand || '';
   document.getElementById('fPrice').value          = p.price;
   document.getElementById('fOldPrice').value       = p.oldPrice || '';
   document.getElementById('fDesc').value           = p.description || '';
   document.getElementById('fCategory').value       = p.category || '';
+  document.getElementById('fSizes').value          = (p.sizes || []).join(', ');
   document.getElementById('fBadge').value          = p.badge || '';
   document.getElementById('fImage').value          = p.image || '';
   document.getElementById('fInStock').checked      = p.inStock;
@@ -311,10 +318,12 @@ function closeModal() {
 function resetForm() {
   document.getElementById('editId').value    = '';
   document.getElementById('fName').value     = '';
+  document.getElementById('fBrand').value    = '';
   document.getElementById('fPrice').value    = '';
   document.getElementById('fOldPrice').value = '';
   document.getElementById('fDesc').value     = '';
   document.getElementById('fCategory').value = '';
+  document.getElementById('fSizes').value    = '';
   document.getElementById('fBadge').value    = '';
   document.getElementById('fImage').value    = '';
   document.getElementById('fInStock').checked = true;

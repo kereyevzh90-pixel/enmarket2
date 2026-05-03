@@ -1,151 +1,209 @@
-/* =====================
-   HEADER SCROLL
-   ===================== */
-const header = document.getElementById('header');
+/* ===================== HEADER SCROLL ===================== */
 window.addEventListener('scroll', () => {
-  header.classList.toggle('scrolled', window.scrollY > 20);
+  document.getElementById('header').classList.toggle('scrolled', window.scrollY > 10);
 });
 
-/* =====================
-   MOBILE MENU
-   ===================== */
+/* ===================== BURGER ===================== */
 function toggleMenu() {
-  const nav    = document.getElementById('nav');
-  const burger = document.getElementById('burger');
-  nav.classList.toggle('open');
-  burger.classList.toggle('active');
+  document.getElementById('nav').classList.toggle('open');
 }
-
-// Close nav on link click
-document.querySelectorAll('.nav__link').forEach(link => {
-  link.addEventListener('click', () => {
-    document.getElementById('nav').classList.remove('open');
-    document.getElementById('burger').classList.remove('active');
-  });
+document.querySelectorAll('.nav__item').forEach(l => {
+  l.addEventListener('click', () => document.getElementById('nav').classList.remove('open'));
 });
 
-/* =====================
-   SEARCH BAR
-   ===================== */
+/* ===================== SEARCH ===================== */
 function toggleSearch() {
-  document.getElementById('searchBar').classList.toggle('open');
-  if (document.getElementById('searchBar').classList.contains('open')) {
-    document.querySelector('.search-input').focus();
-  }
+  const d = document.getElementById('searchDrop');
+  d.classList.toggle('open');
+  if (d.classList.contains('open')) document.getElementById('searchInput').focus();
+}
+document.getElementById('searchInput').addEventListener('input', e => {
+  const q = e.target.value.trim().toLowerCase();
+  renderGrid(q ? allProducts.filter(p =>
+    p.name.toLowerCase().includes(q) ||
+    (p.category||'').toLowerCase().includes(q) ||
+    (p.brand||'').toLowerCase().includes(q)
+  ) : applyFiltersResult());
+});
+
+/* ===================== FILTERS ===================== */
+function toggleFilters() {
+  document.getElementById('filtersPanel').classList.toggle('open');
 }
 
-/* =====================
-   CART SIDEBAR
-   ===================== */
-function toggleCart() {
-  document.getElementById('cartSidebar').classList.toggle('open');
-  document.getElementById('cartOverlay').classList.toggle('open');
-  document.body.style.overflow =
-    document.getElementById('cartSidebar').classList.contains('open') ? 'hidden' : '';
+let selectedSizes = [];
+function toggleSize(btn, size) {
+  btn.classList.toggle('active');
+  selectedSizes = selectedSizes.includes(size)
+    ? selectedSizes.filter(s => s !== size)
+    : [...selectedSizes, size];
+  applyFilters();
 }
 
-/* =====================
-   LOAD PRODUCTS
-   ===================== */
+function applyFilters() { renderGrid(applyFiltersResult()); }
+
+function applyFiltersResult() {
+  const cat      = document.querySelector('input[name="cat"]:checked')?.value || '';
+  const minPrice = Number(document.getElementById('priceMin').value) || 0;
+  const maxPrice = Number(document.getElementById('priceMax').value) || Infinity;
+
+  return allProducts.filter(p => {
+    if (cat && p.category !== cat) return false;
+    if (p.price < minPrice || p.price > maxPrice) return false;
+    if (selectedSizes.length && !selectedSizes.some(s => (p.sizes||[]).includes(s))) return false;
+    return true;
+  });
+}
+
+function applySort(val) {
+  let list = applyFiltersResult();
+  if (val === 'price-asc')  list = [...list].sort((a,b) => a.price - b.price);
+  if (val === 'price-desc') list = [...list].sort((a,b) => b.price - a.price);
+  if (val === 'new')        list = list.filter(p => p.badge === 'Новинка').concat(list.filter(p => p.badge !== 'Новинка'));
+  if (val === 'sale')       list = list.filter(p => p.oldPrice).concat(list.filter(p => !p.oldPrice));
+  renderGrid(list);
+}
+
+function filterCat(cat) {
+  document.querySelectorAll('input[name="cat"]').forEach(r => { r.checked = r.value === cat; });
+  const titles = { women: 'Женщинам', men: 'Мужчинам', kids: 'Детям', sale: 'Распродажа', '': 'Все товары' };
+  document.getElementById('catalogTitle').textContent = titles[cat] || 'Все товары';
+  applyFilters();
+  document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+  return false;
+}
+
+function resetFilters() {
+  document.querySelector('input[name="cat"][value=""]').checked = true;
+  document.getElementById('priceMin').value = '';
+  document.getElementById('priceMax').value = '';
+  selectedSizes = [];
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('catalogTitle').textContent = 'Все товары';
+  renderGrid(allProducts);
+}
+
+/* ===================== LOAD PRODUCTS ===================== */
 let allProducts = [];
 
 async function loadProducts() {
   try {
     const r = await fetch('products.json?t=' + Date.now());
     allProducts = await r.json();
-    renderCatalog(allProducts);
-  } catch (e) {
-    console.error('Не удалось загрузить товары', e);
+    renderGrid(allProducts);
+  } catch(e) {
+    console.error(e);
   }
 }
 
-function renderCatalog(list) {
+/* ===================== RENDER ===================== */
+function renderGrid(list) {
   const grid  = document.getElementById('productsGrid');
-  const empty = document.querySelector('.empty-state');
+  const empty = document.getElementById('emptyState');
+  const count = document.getElementById('catalogCount');
 
-  if (!list || !list.length) {
-    if (empty) empty.style.display = '';
-    grid.style.display = 'none';
+  count.textContent = list.length ? `${list.length} товаров` : '';
+
+  if (!list.length) {
+    empty.style.display = '';
+    grid.innerHTML = '';
     return;
   }
+  empty.style.display = 'none';
 
-  if (empty) empty.style.display = 'none';
-  grid.style.display = 'grid';
-
-  grid.innerHTML = list.map(p => `
-    <div class="product-card">
-      <div class="product-card__img">
-        ${p.image
-          ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.display='none'" />`
-          : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
-        }
-        ${p.badge ? `<span class="product-card__badge">${esc(p.badge)}</span>` : ''}
-        ${!p.inStock ? `<span class="product-card__badge product-card__badge--out">Нет в наличии</span>` : ''}
-      </div>
-      <div class="product-card__body">
-        ${p.category ? `<span class="product-card__cat">${esc(p.category)}</span>` : ''}
-        <h3 class="product-card__name">${esc(p.name)}</h3>
-        ${p.description ? `<p class="product-card__desc">${esc(p.description)}</p>` : ''}
-        <div class="product-card__footer">
+  grid.innerHTML = list.map(p => {
+    const disc = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+    const sizes = (p.sizes || []).map(s =>
+      `<button class="product-card__size" onclick="quickAdd(event,'${esc(p.id)}','${esc(s)}')">${esc(s)}</button>`
+    ).join('');
+    return `
+      <div class="product-card">
+        <div class="product-card__img">
+          ${p.image
+            ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.display='none'" />`
+            : `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`
+          }
+          ${disc > 0 ? `<span class="product-card__badge product-card__badge--sale">−${disc}%</span>` : ''}
+          ${p.badge && !disc ? `<span class="product-card__badge product-card__badge--new">${esc(p.badge)}</span>` : ''}
+          <button class="product-card__wish" onclick="event.stopPropagation();showToast('Добавлено в избранное')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          ${sizes ? `<div class="product-card__sizes">${sizes}</div>` : ''}
+        </div>
+        <div class="product-card__body">
+          ${p.brand ? `<div class="product-card__brand">${esc(p.brand)}</div>` : ''}
+          <div class="product-card__name">${esc(p.name)}</div>
           <div class="product-card__prices">
-            <span class="product-card__price">${fmtPrice(p.price)}</span>
-            ${p.oldPrice ? `<span class="product-card__old">${fmtPrice(p.oldPrice)}</span>` : ''}
+            <span class="product-card__price">${fmt(p.price)}</span>
+            ${p.oldPrice ? `<span class="product-card__old">${fmt(p.oldPrice)}</span>` : ''}
+            ${disc > 0 ? `<span class="product-card__disc">−${disc}%</span>` : ''}
           </div>
-          <button class="btn-cart ${!p.inStock ? 'btn-cart--disabled' : ''}"
-            onclick="${p.inStock ? `addToCart('${p.id}')` : ''}"
-            ${!p.inStock ? 'disabled' : ''}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        </div>
+        <div class="product-card__foot">
+          <button class="btn-add" onclick="addToCart('${esc(p.id)}')" ${!p.inStock ? 'disabled' : ''}>
+            ${p.inStock ? 'В корзину' : 'Нет в наличии'}
           </button>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
-function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function fmtPrice(n) {
-  return Number(n).toLocaleString('ru-RU') + ' ₽';
+function quickAdd(e, id, size) {
+  e.stopPropagation();
+  addToCart(id, size);
 }
 
-loadProducts();
-
-/* =====================
-   CART
-   ===================== */
+/* ===================== CART ===================== */
 let cart = JSON.parse(localStorage.getItem('em_cart') || '[]');
 
-function addToCart(id) {
+function addToCart(id, size) {
   const p = allProducts.find(p => p.id === id);
   if (!p) return;
-  const existing = cart.find(c => c.id === id);
-  if (existing) { existing.qty++; } else { cart.push({ ...p, qty: 1 }); }
-  localStorage.setItem('em_cart', JSON.stringify(cart));
-  updateCartCount();
-  renderCartItems();
+  const key  = id + (size || '');
+  const item = cart.find(c => c._key === key);
+  if (item) { item.qty++; }
+  else { cart.push({ ...p, qty: 1, selectedSize: size || null, _key: key }); }
+  saveCart();
   showToast(`«${p.name}» добавлен в корзину`);
 }
 
-function updateCartCount() {
-  const total = cart.reduce((s, c) => s + c.qty, 0);
-  const el = document.getElementById('cartCount');
-  el.textContent = total || '';
-  el.style.display = total ? 'flex' : 'none';
+function changeQty(key, delta) {
+  const item = cart.find(c => c._key === key);
+  if (!item) return;
+  item.qty = Math.max(1, item.qty + delta);
+  saveCart();
+  renderCart();
 }
 
-function renderCartItems() {
-  const body = document.querySelector('.cart-sidebar__body');
+function removeItem(key) {
+  cart = cart.filter(c => c._key !== key);
+  saveCart();
+  renderCart();
+}
+
+function saveCart() {
+  localStorage.setItem('em_cart', JSON.stringify(cart));
+  renderCart();
+}
+
+function renderCart() {
+  const body  = document.getElementById('cartBody');
+  const count = document.getElementById('cartCount');
+  const label = document.getElementById('cartQtyLabel');
+  const total = cart.reduce((s, c) => s + c.qty, 0);
+  const sum   = cart.reduce((s, c) => s + c.price * c.qty, 0);
+
+  count.textContent = total || '';
+  label.textContent = total ? `(${total})` : '';
+
   if (!cart.length) {
     body.innerHTML = `<div class="cart-empty">
       <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      <p>Корзина пуста</p>
-      <button class="btn btn--primary" onclick="toggleCart()">Перейти в каталог</button>
-    </div>`;
+      <p>Корзина пуста</p></div>`;
     return;
   }
 
-  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
   body.innerHTML = `
     <div class="cart-list">
       ${cart.map(c => `
@@ -153,127 +211,52 @@ function renderCartItems() {
           <div class="cart-item__img">
             ${c.image ? `<img src="${esc(c.image)}" alt="" onerror="this.style.display='none'" />` : ''}
           </div>
-          <div class="cart-item__info">
+          <div>
+            ${c.brand ? `<div class="product-card__brand">${esc(c.brand)}</div>` : ''}
             <div class="cart-item__name">${esc(c.name)}</div>
-            <div class="cart-item__price">${fmtPrice(c.price)}</div>
+            <div class="cart-item__meta">${c.selectedSize ? 'Размер: ' + esc(c.selectedSize) : ''}</div>
+            <div class="cart-item__qty">
+              <button onclick="changeQty('${esc(c._key)}', -1)">−</button>
+              <span>${c.qty}</span>
+              <button onclick="changeQty('${esc(c._key)}', 1)">+</button>
+            </div>
           </div>
-          <div class="cart-item__qty">
-            <button onclick="changeQty('${c.id}', -1)">−</button>
-            <span>${c.qty}</span>
-            <button onclick="changeQty('${c.id}', 1)">+</button>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            <button class="cart-item__del" onclick="removeItem('${esc(c._key)}')">✕</button>
+            <div class="cart-item__price">${fmt(c.price * c.qty)}</div>
           </div>
-          <button class="cart-item__del" onclick="removeFromCart('${c.id}')">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
         </div>
       `).join('')}
-      <div class="cart-total">
-        <span>Итого:</span>
-        <strong>${fmtPrice(total)}</strong>
-      </div>
-      <button class="btn btn--primary" style="width:100%;justify-content:center" onclick="showToast('Оформление заказа скоро будет доступно!')">Оформить заказ</button>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Итого:</span><strong>${fmt(sum)}</strong></div>
+      <button class="btn btn--primary" style="width:100%;justify-content:center;height:48px" onclick="showToast('Оформление заказа скоро будет доступно!')">Оформить заказ</button>
     </div>
   `;
 }
 
-function changeQty(id, delta) {
-  const item = cart.find(c => c.id === id);
-  if (!item) return;
-  item.qty = Math.max(1, item.qty + delta);
-  localStorage.setItem('em_cart', JSON.stringify(cart));
-  updateCartCount();
-  renderCartItems();
+function toggleCart() {
+  document.getElementById('cartSidebar').classList.toggle('open');
+  document.getElementById('cartOverlay').classList.toggle('open');
+  document.body.style.overflow = document.getElementById('cartSidebar').classList.contains('open') ? 'hidden' : '';
 }
 
-function removeFromCart(id) {
-  cart = cart.filter(c => c.id !== id);
-  localStorage.setItem('em_cart', JSON.stringify(cart));
-  updateCartCount();
-  renderCartItems();
-}
-
-updateCartCount();
-renderCartItems();
-
-/* =====================
-   FILTER BUTTONS
-   ===================== */
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const label = btn.textContent.trim();
-    if (label === 'Все') { renderCatalog(allProducts); return; }
-    if (label === 'Новинки') { renderCatalog(allProducts.filter(p => p.badge === 'Новинка')); return; }
-    if (label === 'Популярное') { renderCatalog(allProducts.filter(p => p.badge === 'Хит')); return; }
-    if (label === 'Скидки') { renderCatalog(allProducts.filter(p => p.oldPrice)); return; }
-  });
-});
-
-/* =====================
-   TOAST
-   ===================== */
+/* ===================== TOAST ===================== */
 function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 3000);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-/* =====================
-   SUBSCRIBE
-   ===================== */
-function subscribeEmail(e) {
-  e.preventDefault();
-  const input = e.target.querySelector('input');
-  if (input.value) {
-    showToast('Вы подписались! Скидка 10% уже на вашем e-mail.');
-    input.value = '';
-  }
+/* ===================== HELPERS ===================== */
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmt(n) {
+  return Number(n).toLocaleString('ru-RU') + ' ₸';
 }
 
-/* =====================
-   CONTACT FORM
-   ===================== */
-function sendMessage(e) {
-  e.preventDefault();
-  showToast('Сообщение отправлено! Мы свяжемся с вами в ближайшее время.');
-  e.target.reset();
-}
-
-/* =====================
-   SMOOTH SCROLL (fallback)
-   ===================== */
-document.querySelectorAll('a[href^="#"]').forEach(a => {
-  a.addEventListener('click', e => {
-    const id = a.getAttribute('href').slice(1);
-    const el = document.getElementById(id);
-    if (el) {
-      e.preventDefault();
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  });
-});
-
-/* =====================
-   ANIMATE ON SCROLL
-   ===================== */
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
-  });
-}, { threshold: 0.12 });
-
-document.querySelectorAll('.feature, .empty-state, .about__content, .contact__form').forEach(el => {
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(24px)';
-  el.style.transition = 'opacity .5s ease, transform .5s ease';
-  observer.observe(el);
-});
-
-// Add visible class styles via JS
-const style = document.createElement('style');
-style.textContent = '.visible { opacity: 1 !important; transform: translateY(0) !important; }';
-document.head.appendChild(style);
+/* ===================== INIT ===================== */
+loadProducts();
+renderCart();
