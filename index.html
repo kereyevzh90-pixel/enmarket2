@@ -202,7 +202,21 @@
 
         <!-- Horizontal filters -->
         <div class="hfilters">
-          <div class="hfilter-group" id="hfSize">
+          <div class="hfilter-group">
+            <button class="hfilter-btn" onclick="toggleDropdown('dropCat')">
+              Категория <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hfilter-drop" id="dropCat">
+              <div class="sort-list">
+                <button onclick="filterCat('');closeDropdowns()">Все</button>
+                <button onclick="filterCat('women');closeDropdowns()">Женщинам</button>
+                <button onclick="filterCat('men');closeDropdowns()">Мужчинам</button>
+                <button onclick="filterCat('kids');closeDropdowns()">Детям</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="hfilter-group">
             <button class="hfilter-btn" onclick="toggleDropdown('dropSize')">
               Размер <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
@@ -221,6 +235,38 @@
                 <button class="size-btn" onclick="toggleSize(this,'40')">40</button>
                 <button class="size-btn" onclick="toggleSize(this,'41')">41</button>
               </div>
+            </div>
+          </div>
+
+          <div class="hfilter-group">
+            <button class="hfilter-btn" onclick="toggleDropdown('dropColor')">
+              Цвет <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hfilter-drop" id="dropColor">
+              <div class="color-grid">
+                <button class="color-btn" onclick="toggleColor(this,'Белый')" style="background:#fff;border-color:#ccc" title="Белый"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Чёрный')" style="background:#1a1a1a" title="Чёрный"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Серый')" style="background:#9ca3af" title="Серый"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Бежевый')" style="background:#d4b896" title="Бежевый"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Коричневый')" style="background:#92400e" title="Коричневый"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Синий')" style="background:#3b82f6" title="Синий"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Красный')" style="background:#ef4444" title="Красный"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Зелёный')" style="background:#22c55e" title="Зелёный"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Жёлтый')" style="background:#eab308" title="Жёлтый"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Розовый')" style="background:#f9a8d4" title="Розовый"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Фиолетовый')" style="background:#a855f7" title="Фиолетовый"></button>
+                <button class="color-btn" onclick="toggleColor(this,'Оранжевый')" style="background:#f97316" title="Оранжевый"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="hfilter-group">
+            <button class="hfilter-btn" onclick="toggleDropdown('dropBrand')">
+              Бренд <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="hfilter-drop" id="dropBrand">
+              <input type="text" class="brand-search" placeholder="Поиск бренда..." oninput="filterBrandList(this.value)" />
+              <div class="brand-list" id="brandList"></div>
             </div>
           </div>
 
@@ -251,7 +297,13 @@
             </div>
           </div>
 
-          <button class="hfilter-reset" onclick="resetFilters()">Сбросить</button>
+          <button class="hfilter-toggle" id="saleToggle" onclick="toggleSaleFilter(this)">
+            Только со скидкой
+          </button>
+
+          <button class="hfilter-reset" id="resetBtn" onclick="resetFilters()" style="display:none">
+            ✕ Сбросить
+          </button>
         </div>
 
         <!-- Empty state -->

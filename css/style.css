@@ -302,30 +302,68 @@ img { max-width: 100%; display: block; }
 .hfilters {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
 }
 .hfilter-group { position: relative; }
+
 .hfilter-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
-  height: 36px;
-  padding: 0 14px;
+  height: 34px;
+  padding: 0 12px;
   border: 1px solid var(--border);
   background: #fff;
   border-radius: 99px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 400;
   cursor: pointer;
   font-family: inherit;
   color: var(--text);
   transition: border-color .15s;
   white-space: nowrap;
 }
-.hfilter-btn:hover { border-color: var(--text); }
-.hfilter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+.hfilter-btn:hover { border-color: #999; }
+.hfilter-btn.active { border-color: var(--text); border-width: 2px; font-weight: 600; }
+
+.hfilter-toggle {
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 99px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.hfilter-toggle:hover { border-color: #999; }
+.hfilter-toggle.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+.hfilter-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--accent);
+  background: #fff;
+  border-radius: 99px;
+  font-size: 13px;
+  color: var(--accent);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+}
+.hfilter-reset:hover { background: var(--accent); color: #fff; }
 
 .hfilter-drop {
   display: none;
@@ -342,7 +380,7 @@ img { max-width: 100%; display: block; }
 }
 .hfilter-drop.open { display: block; }
 
-.hfilter-sizes { display: flex; flex-wrap: wrap; gap: 6px; }
+.hfilter-sizes { display: flex; flex-wrap: wrap; gap: 6px; width: 280px; }
 .size-btn {
   min-width: 44px; height: 36px;
   padding: 0 8px;
@@ -359,6 +397,39 @@ img { max-width: 100%; display: block; }
 .size-btn:hover { border-color: var(--text); }
 .size-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
 
+.color-grid { display: flex; flex-wrap: wrap; gap: 8px; width: 220px; }
+.color-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  outline: 2px solid transparent;
+}
+.color-btn:hover { transform: scale(1.15); }
+.color-btn.active { outline: 2px solid var(--text); outline-offset: 2px; }
+
+.brand-search {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 10px;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  margin-bottom: 10px;
+}
+.brand-search:focus { border-color: var(--text); }
+.brand-list { display: flex; flex-direction: column; gap: 2px; max-height: 200px; overflow-y: auto; }
+.brand-list label {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; cursor: pointer; padding: 5px 4px;
+  border-radius: 4px; transition: background .1s;
+}
+.brand-list label:hover { background: var(--bg-soft); }
+.brand-list input { accent-color: var(--text); cursor: pointer; }
+
 .price-range { display: flex; align-items: center; gap: 8px; }
 .price-range input {
   width: 90px; height: 36px;
@@ -374,32 +445,13 @@ img { max-width: 100%; display: block; }
 
 .sort-list { display: flex; flex-direction: column; gap: 2px; }
 .sort-list button {
-  text-align: left;
-  padding: 8px 10px;
-  border: none;
-  background: none;
-  font-size: 13px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-family: inherit;
-  color: var(--text);
-  transition: background .15s;
+  text-align: left; padding: 8px 10px;
+  border: none; background: none;
+  font-size: 13px; cursor: pointer;
+  border-radius: 4px; font-family: inherit;
+  color: var(--text); transition: background .15s;
 }
 .sort-list button:hover { background: var(--bg-soft); }
-
-.hfilter-reset {
-  height: 36px;
-  padding: 0 14px;
-  border: none;
-  background: none;
-  font-size: 13px;
-  color: var(--muted);
-  cursor: pointer;
-  font-family: inherit;
-  text-decoration: underline;
-  transition: color .15s;
-}
-.hfilter-reset:hover { color: var(--accent); }
 
 /* Empty state */
 .empty-state {

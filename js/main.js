@@ -55,6 +55,7 @@ function toggleDropdown(id) {
   if (!isOpen) {
     el.classList.add('open');
     el.previousElementSibling.classList.add('active');
+    if (id === 'dropBrand') filterBrandList('');
   }
 }
 function closeDropdowns() {
@@ -67,7 +68,10 @@ document.addEventListener('click', e => {
 
 /* ===================== FILTERS ===================== */
 
-let selectedSizes = [];
+let selectedSizes  = [];
+let selectedColors = [];
+let selectedBrands = [];
+let saleOnly = false;
 let activeCat = '';
 let activeSubcat = '';
 
@@ -89,11 +93,56 @@ function applyFiltersResult() {
     if (activeCat === 'new')  return p.badge === 'Новинка';
     if (activeCat === 'sale') return !!p.oldPrice;
     if (activeCat && p.category !== activeCat) return false;
-    if (activeSubcat && !(p.subcategory || '').includes(activeSubcat) && !(p.name || '').includes(activeSubcat)) return false;
+    if (activeSubcat && !(p.subcategory||'').includes(activeSubcat) && !(p.name||'').includes(activeSubcat)) return false;
     if (p.price < minPrice || p.price > maxPrice) return false;
     if (selectedSizes.length && !selectedSizes.some(s => (p.sizes||[]).includes(s))) return false;
+    if (selectedColors.length && !selectedColors.includes(p.color)) return false;
+    if (selectedBrands.length && !selectedBrands.includes(p.brand)) return false;
+    if (saleOnly && !p.oldPrice) return false;
     return true;
   });
+}
+
+function toggleColor(btn, color) {
+  btn.classList.toggle('active');
+  selectedColors = selectedColors.includes(color)
+    ? selectedColors.filter(c => c !== color)
+    : [...selectedColors, color];
+  applyFilters();
+  updateResetBtn();
+}
+
+function toggleSaleFilter(btn) {
+  saleOnly = !saleOnly;
+  btn.classList.toggle('active', saleOnly);
+  applyFilters();
+  updateResetBtn();
+}
+
+function filterBrandList(q) {
+  const brands = [...new Set(allProducts.map(p => p.brand).filter(Boolean))];
+  const list = document.getElementById('brandList');
+  const filtered = brands.filter(b => b.toLowerCase().includes(q.toLowerCase()));
+  list.innerHTML = filtered.map(b => `
+    <label>
+      <input type="checkbox" ${selectedBrands.includes(b) ? 'checked' : ''} onchange="toggleBrand('${esc(b)}',this)" />
+      ${esc(b)}
+    </label>
+  `).join('');
+}
+
+function toggleBrand(brand, cb) {
+  selectedBrands = cb.checked
+    ? [...selectedBrands, brand]
+    : selectedBrands.filter(b => b !== brand);
+  applyFilters();
+  updateResetBtn();
+}
+
+function updateResetBtn() {
+  const hasFilter = selectedSizes.length || selectedColors.length || selectedBrands.length || saleOnly ||
+    document.getElementById('priceMin').value || document.getElementById('priceMax').value;
+  document.getElementById('resetBtn').style.display = hasFilter ? 'inline-flex' : 'none';
 }
 
 function applySort(val) {
@@ -119,14 +168,17 @@ function filterCat(cat) {
 }
 
 function resetFilters() {
-  activeCat = '';
-  activeSubcat = '';
-  selectedSizes = [];
+  activeCat = ''; activeSubcat = '';
+  selectedSizes = []; selectedColors = []; selectedBrands = [];
+  saleOnly = false;
   document.getElementById('priceMin').value = '';
   document.getElementById('priceMax').value = '';
   document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('saleToggle').classList.remove('active');
   document.querySelectorAll('.ctab').forEach((b,i) => b.classList.toggle('active', i === 0));
   document.getElementById('catalogTitle').textContent = 'Все товары';
+  document.getElementById('resetBtn').style.display = 'none';
   closeDropdowns();
   renderGrid(allProducts);
 }
