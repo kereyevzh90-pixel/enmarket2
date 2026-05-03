@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EnMarket — Админ панель</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- SETUP SCREEN -->
+  <div class="screen" id="setupScreen">
+    <div class="auth-card">
+      <div class="auth-logo"><span class="c-accent">En</span>Market</div>
+      <h2>Настройка доступа</h2>
+      <p class="auth-sub">Введите GitHub токен для управления товарами.<br/>Он нужен один раз и сохранится в браузере.</p>
+      <div class="field">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" />
+        <small>Нужен токен с правом <strong>repo</strong>. <a href="https://github.com/settings/tokens/new" target="_blank">Создать токен →</a></small>
+      </div>
+      <div class="field">
+        <label>Пароль админки</label>
+        <input type="password" id="passwordInput" placeholder="Придумайте пароль" />
+        <small>Этот пароль будет запрашиваться при каждом входе.</small>
+      </div>
+      <button class="btn btn-primary" onclick="saveSetup()">Сохранить и войти</button>
+      <div class="error" id="setupError"></div>
+    </div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div class="screen hidden" id="loginScreen">
+    <div class="auth-card">
+      <div class="auth-logo"><span class="c-accent">En</span>Market</div>
+      <h2>Вход в админку</h2>
+      <p class="auth-sub">Введите пароль для доступа к панели управления</p>
+      <div class="field">
+        <label>Пароль</label>
+        <input type="password" id="loginPassword" placeholder="Введите пароль" onkeydown="if(event.key==='Enter')login()" />
+      </div>
+      <button class="btn btn-primary" onclick="login()">Войти</button>
+      <div class="error" id="loginError"></div>
+      <button class="btn-link" onclick="resetSetup()">Изменить настройки</button>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="screen hidden" id="adminScreen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__logo"><span class="c-accent">En</span>Market</div>
+      <nav class="sidebar__nav">
+        <a href="#" class="sidebar__link active" onclick="showSection('products')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          Товары
+        </a>
+        <a href="#" class="sidebar__link" onclick="showSection('add')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Добавить товар
+        </a>
+      </nav>
+      <div class="sidebar__footer">
+        <a href="/" target="_blank" class="sidebar__link">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Открыть сайт
+        </a>
+        <button class="sidebar__link logout" onclick="logout()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Выйти
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+
+      <!-- Products section -->
+      <section id="sectionProducts">
+        <div class="page-header">
+          <div>
+            <h1>Товары</h1>
+            <p class="page-sub">Управление каталогом магазина</p>
+          </div>
+          <button class="btn btn-primary" onclick="showSection('add')">+ Добавить товар</button>
+        </div>
+
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card">
+            <span class="stat-num" id="statTotal">0</span>
+            <span class="stat-label">Всего товаров</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="statInStock">0</span>
+            <span class="stat-label">В наличии</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num" id="statSale">0</span>
+            <span class="stat-label">Со скидкой</span>
+          </div>
+        </div>
+
+        <div class="products-table-wrap">
+          <div class="table-toolbar">
+            <input type="text" class="search-input" placeholder="Поиск по товарам..." oninput="filterProducts(this.value)" />
+          </div>
+          <div id="productsList">
+            <div class="empty-hint">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              <p>Товаров пока нет. <button class="btn-link" onclick="showSection('add')">Добавить первый →</button></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Add/Edit section -->
+      <section id="sectionAdd" class="hidden">
+        <div class="page-header">
+          <div>
+            <h1 id="formTitle">Добавить товар</h1>
+            <p class="page-sub">Заполните информацию о товаре</p>
+          </div>
+          <button class="btn btn-ghost" onclick="showSection('products')">← Назад</button>
+        </div>
+
+        <form class="product-form" onsubmit="saveProduct(event)">
+          <input type="hidden" id="editId" />
+
+          <div class="form-grid">
+            <div class="form-col">
+              <div class="field">
+                <label>Название товара *</label>
+                <input type="text" id="fName" placeholder="Например: Беспроводные наушники" required />
+              </div>
+              <div class="field">
+                <label>Описание</label>
+                <textarea id="fDesc" rows="3" placeholder="Краткое описание товара..."></textarea>
+              </div>
+              <div class="form-row-2">
+                <div class="field">
+                  <label>Цена (₽) *</label>
+                  <input type="number" id="fPrice" placeholder="1990" min="0" required />
+                </div>
+                <div class="field">
+                  <label>Старая цена (₽)</label>
+                  <input type="number" id="fOldPrice" placeholder="2490" min="0" />
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="field">
+                  <label>Категория</label>
+                  <input type="text" id="fCategory" placeholder="Электроника" />
+                </div>
+                <div class="field">
+                  <label>Бейдж</label>
+                  <select id="fBadge">
+                    <option value="">Без бейджа</option>
+                    <option value="Новинка">Новинка</option>
+                    <option value="Хит">Хит</option>
+                    <option value="Скидка">Скидка</option>
+                    <option value="Акция">Акция</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="fInStock" checked />
+                  <span>В наличии</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-col">
+              <div class="field">
+                <label>Ссылка на изображение</label>
+                <input type="url" id="fImage" placeholder="https://..." oninput="previewImage(this.value)" />
+              </div>
+              <div class="img-preview" id="imgPreview">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                <span>Превью изображения</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" id="saveBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Сохранить и опубликовать
+            </button>
+            <button type="button" class="btn btn-ghost" onclick="resetForm()">Очистить</button>
+          </div>
+        </form>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Delete modal -->
+  <div class="modal-overlay hidden" id="deleteModal">
+    <div class="modal">
+      <h3>Удалить товар?</h3>
+      <p>Это действие нельзя отменить. Товар будет удалён с сайта после публикации.</p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" onclick="confirmDelete()">Удалить</button>
+        <button class="btn btn-ghost" onclick="closeModal()">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
