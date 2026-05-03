@@ -217,8 +217,8 @@
           </div>
 
           <div class="hfilter-group">
-            <button class="hfilter-btn" onclick="toggleDropdown('dropSize')">
-              Размер <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <button class="hfilter-btn" id="sizeFilterBtn" onclick="toggleDropdown('dropSize')">
+              <span id="sizeFilterLabel">Размер</span> <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="hfilter-drop" id="dropSize">
               <div class="hfilter-sizes">
@@ -239,8 +239,8 @@
           </div>
 
           <div class="hfilter-group">
-            <button class="hfilter-btn" onclick="toggleDropdown('dropColor')">
-              Цвет <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <button class="hfilter-btn" id="colorFilterBtn" onclick="toggleDropdown('dropColor')">
+              <span id="colorFilterLabel">Цвет</span> <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="hfilter-drop" id="dropColor">
               <div class="color-grid">
@@ -261,8 +261,8 @@
           </div>
 
           <div class="hfilter-group">
-            <button class="hfilter-btn" onclick="toggleDropdown('dropBrand')">
-              Бренд <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <button class="hfilter-btn" id="brandFilterBtn" onclick="toggleDropdown('dropBrand')">
+              <span id="brandFilterLabel">Бренд</span> <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="hfilter-drop" id="dropBrand">
               <input type="text" class="brand-search" placeholder="Поиск бренда..." oninput="filterBrandList(this.value)" />
@@ -271,28 +271,28 @@
           </div>
 
           <div class="hfilter-group">
-            <button class="hfilter-btn" onclick="toggleDropdown('dropPrice')">
-              Цена <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <button class="hfilter-btn" id="priceFilterBtn" onclick="toggleDropdown('dropPrice')">
+              <span id="priceFilterLabel">Цена</span> <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="hfilter-drop" id="dropPrice">
               <div class="price-range">
-                <input type="number" id="priceMin" placeholder="от" oninput="applyFilters()" />
+                <input type="number" id="priceMin" placeholder="от" oninput="applyFilters();updatePriceLabel()" />
                 <span>—</span>
-                <input type="number" id="priceMax" placeholder="до" oninput="applyFilters()" />
+                <input type="number" id="priceMax" placeholder="до" oninput="applyFilters();updatePriceLabel()" />
               </div>
             </div>
           </div>
 
           <div class="hfilter-group">
-            <button class="hfilter-btn" onclick="toggleDropdown('dropSort')">
-              Сортировка <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <button class="hfilter-btn" id="sortFilterBtn" onclick="toggleDropdown('dropSort')">
+              <span id="sortFilterLabel">Сортировка</span> <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="hfilter-drop" id="dropSort">
               <div class="sort-list">
-                <button onclick="applySort('');closeDropdowns()">По умолчанию</button>
-                <button onclick="applySort('price-asc');closeDropdowns()">Сначала дешевле</button>
-                <button onclick="applySort('price-desc');closeDropdowns()">Сначала дороже</button>
-                <button onclick="applySort('new');closeDropdowns()">Новинки</button>
+                <button onclick="selectSort('','Сортировка')">По умолчанию</button>
+                <button onclick="selectSort('price-asc','Дешевле')">Сначала дешевле</button>
+                <button onclick="selectSort('price-desc','Дороже')">Сначала дороже</button>
+                <button onclick="selectSort('new','Новинки')">Новинки</button>
               </div>
             </div>
           </div>

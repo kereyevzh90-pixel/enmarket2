@@ -84,12 +84,26 @@ let saleOnly = false;
 let activeCat = '';
 let activeSubcat = '';
 
+function updateFilterLabel(labelId, btnId, values, defaultText) {
+  const label = document.getElementById(labelId);
+  const btn   = document.getElementById(btnId);
+  if (values.length === 0) {
+    label.textContent = defaultText;
+    btn.classList.remove('active');
+  } else {
+    label.textContent = values.length === 1 ? values[0] : `${defaultText}: ${values.length}`;
+    btn.classList.add('active');
+  }
+}
+
 function toggleSize(btn, size) {
   btn.classList.toggle('active');
   selectedSizes = selectedSizes.includes(size)
     ? selectedSizes.filter(s => s !== size)
     : [...selectedSizes, size];
+  updateFilterLabel('sizeFilterLabel', 'sizeFilterBtn', selectedSizes, 'Размер');
   applyFilters();
+  updateResetBtn();
 }
 
 function applyFilters() { renderGrid(applyFiltersResult()); }
@@ -117,6 +131,7 @@ function toggleColor(btn, color) {
   selectedColors = selectedColors.includes(color)
     ? selectedColors.filter(c => c !== color)
     : [...selectedColors, color];
+  updateFilterLabel('colorFilterLabel', 'colorFilterBtn', selectedColors, 'Цвет');
   applyFilters();
   updateResetBtn();
 }
@@ -144,8 +159,31 @@ function toggleBrand(brand, cb) {
   selectedBrands = cb.checked
     ? [...selectedBrands, brand]
     : selectedBrands.filter(b => b !== brand);
+  updateFilterLabel('brandFilterLabel', 'brandFilterBtn', selectedBrands, 'Бренд');
   applyFilters();
   updateResetBtn();
+}
+
+function updatePriceLabel() {
+  const min = document.getElementById('priceMin').value;
+  const max = document.getElementById('priceMax').value;
+  const btn = document.getElementById('priceFilterBtn');
+  const label = document.getElementById('priceFilterLabel');
+  if (min || max) {
+    label.textContent = (min || '0') + ' — ' + (max || '∞') + ' ₸';
+    btn.classList.add('active');
+  } else {
+    label.textContent = 'Цена';
+    btn.classList.remove('active');
+  }
+}
+
+function selectSort(val, label) {
+  document.getElementById('sortFilterLabel').textContent = label;
+  const btn = document.getElementById('sortFilterBtn');
+  btn.classList.toggle('active', val !== '');
+  applySort(val);
+  closeDropdowns();
 }
 
 function updateResetBtn() {
@@ -185,8 +223,18 @@ function resetFilters() {
   document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('saleToggle').classList.remove('active');
-  document.getElementById('catFilterLabel').textContent = 'Категория';
+  document.getElementById('catFilterLabel').textContent   = 'Категория';
   document.getElementById('catFilterBtn').classList.remove('active');
+  document.getElementById('sizeFilterLabel').textContent  = 'Размер';
+  document.getElementById('sizeFilterBtn').classList.remove('active');
+  document.getElementById('colorFilterLabel').textContent = 'Цвет';
+  document.getElementById('colorFilterBtn').classList.remove('active');
+  document.getElementById('brandFilterLabel').textContent = 'Бренд';
+  document.getElementById('brandFilterBtn').classList.remove('active');
+  document.getElementById('priceFilterLabel').textContent = 'Цена';
+  document.getElementById('priceFilterBtn').classList.remove('active');
+  document.getElementById('sortFilterLabel').textContent  = 'Сортировка';
+  document.getElementById('sortFilterBtn').classList.remove('active');
   document.querySelectorAll('.ctab').forEach((b,i) => b.classList.toggle('active', i === 0));
   document.getElementById('catalogTitle').textContent = 'Все товары';
   document.getElementById('resetBtn').style.display = 'none';
