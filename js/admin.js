@@ -99,8 +99,8 @@ function showSection(name) {
 function token() { return localStorage.getItem('em_token'); }
 
 async function ghGet(path) {
-  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`, {
-    headers: { Authorization: `Bearer ${token()}`, Accept: 'application/vnd.github.v3+json' }
+  const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}&t=${Date.now()}`, {
+    headers: { Authorization: `Bearer ${token()}`, Accept: 'application/vnd.github.v3+json', 'Cache-Control': 'no-cache' }
   });
   if (!r.ok) throw new Error(`GitHub error: ${r.status}`);
   return r.json();
@@ -146,9 +146,18 @@ async function loadProducts() {
 
 /* ===================== SAVE TO GITHUB ===================== */
 async function saveToGitHub(message) {
-  const data = await ghGet(FILE);
   const json = JSON.stringify(products, null, 2);
-  await ghPut(FILE, json, data.sha, message);
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const data = await ghGet(FILE);
+    try {
+      await ghPut(FILE, json, data.sha, message);
+      return;
+    } catch (err) {
+      const isConflict = err.message.includes('does not match') || err.message.includes('409') || err.message.includes('conflict');
+      if (isConflict && attempt < 3) continue;
+      throw err;
+    }
+  }
 }
 
 /* ===================== RENDER PRODUCTS ===================== */
