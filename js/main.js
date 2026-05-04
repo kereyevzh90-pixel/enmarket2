@@ -373,22 +373,22 @@ function renderCart() {
     <div class="cart-list">
       ${cart.map(c => `
         <div class="cart-item">
+          <button class="cart-item__del" onclick="removeItem('${esc(c._key)}')">✕</button>
           <div class="cart-item__img">
             ${c.image ? `<img src="${esc(c.image)}" alt="" onerror="this.style.display='none'" />` : ''}
           </div>
-          <div>
+          <div class="cart-item__body">
             ${c.brand ? `<div class="product-card__brand">${esc(c.brand)}</div>` : ''}
             <div class="cart-item__name">${esc(c.name)}</div>
             <div class="cart-item__meta">${c.selectedSize ? 'Размер: ' + esc(c.selectedSize) : ''}</div>
-            <div class="cart-item__qty">
-              <button onclick="changeQty('${esc(c._key)}', -1)">−</button>
-              <span>${c.qty}</span>
-              <button onclick="changeQty('${esc(c._key)}', 1)" ${c.maxQty && c.qty >= c.maxQty ? 'disabled title="Достигнут лимит"' : ''}>+</button>
+            <div class="cart-item__bottom">
+              <div class="cart-item__qty">
+                <button onclick="changeQty('${esc(c._key)}', -1)">−</button>
+                <span>${c.qty}</span>
+                <button onclick="changeQty('${esc(c._key)}', 1)" ${c.maxQty && c.qty >= c.maxQty ? 'disabled title="Достигнут лимит"' : ''}>+</button>
+              </div>
+              <div class="cart-item__price">${fmt(c.price * c.qty)}</div>
             </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-            <button class="cart-item__del" onclick="removeItem('${esc(c._key)}')">✕</button>
-            <div class="cart-item__price">${fmt(c.price * c.qty)}</div>
           </div>
         </div>
       `).join('')}
