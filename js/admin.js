@@ -100,7 +100,7 @@ function token() { return localStorage.getItem('em_token'); }
 
 async function ghGet(path) {
   const r = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}&t=${Date.now()}`, {
-    headers: { Authorization: `Bearer ${token()}`, Accept: 'application/vnd.github.v3+json', 'Cache-Control': 'no-cache' }
+    headers: { Authorization: `Bearer ${token()}`, Accept: 'application/vnd.github.v3+json' }
   });
   if (!r.ok) throw new Error(`GitHub error: ${r.status}`);
   return r.json();
