@@ -357,9 +357,15 @@ select { cursor: pointer; }
 .form-col { display: flex; flex-direction: column; gap: 18px; }
 .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-.img-preview {
+.field-optional {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.img-drop-zone {
   width: 100%;
-  aspect-ratio: 1;
+  padding: 28px 16px;
   background: var(--bg);
   border: 2px dashed var(--border);
   border-radius: var(--radius);
@@ -367,16 +373,84 @@ select { cursor: pointer; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   color: var(--muted);
   font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  user-select: none;
+}
+.img-drop-zone:hover,
+.img-drop-zone.drag-over {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+.img-drop-hint { font-size: 12px; font-weight: 400; }
+
+.img-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+.img-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
   overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.img-preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.img-thumb--primary { border-color: var(--accent); }
+.img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.img-thumb__del {
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 22px; height: 22px;
+  border-radius: 99px;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background .15s;
 }
+.img-thumb__del:hover { background: var(--danger); }
+.img-thumb__star {
+  position: absolute;
+  bottom: 4px; left: 4px;
+  width: 22px; height: 22px;
+  border-radius: 99px;
+  background: rgba(0,0,0,.45);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background .15s;
+}
+.img-thumb__star:hover { background: var(--accent); }
+.img-thumb--primary .img-thumb__star { background: var(--accent); }
+.img-thumb__spinner {
+  width: 24px; height: 24px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .form-actions {
   display: flex;

@@ -69,6 +69,7 @@ function logout() {
 async function enterAdmin() {
   show('adminScreen');
   showSection('products');
+  initImageZone();
   await loadProducts();
 }
 
@@ -105,10 +106,10 @@ async function ghGet(path) {
   return r.json();
 }
 
-async function ghPut(path, content, sha, message) {
+async function ghPut(path, content, sha, message, rawBase64 = false) {
   const body = {
     message,
-    content: btoa(unescape(encodeURIComponent(content))),
+    content: rawBase64 ? content : btoa(unescape(encodeURIComponent(content))),
     branch: BRANCH,
   };
   if (sha) body.sha = sha;
@@ -209,9 +210,119 @@ function filterProducts(q) {
   renderProducts(filtered);
 }
 
+/* ===================== IMAGE UPLOAD ===================== */
+let pendingImages = [];
+let primaryImageId = null;
+
+function initImageZone() {
+  const zone  = document.getElementById('imgDropZone');
+  const input = document.getElementById('imgFileInput');
+
+  zone.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => {
+    Array.from(input.files).forEach(handleImageFile);
+    input.value = '';
+  });
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')).forEach(handleImageFile);
+  });
+}
+
+function handleImageFile(file) {
+  const id = uid();
+  const localUrl = URL.createObjectURL(file);
+  pendingImages.push({ id, url: null, localUrl, uploading: true, error: false });
+  if (!primaryImageId) primaryImageId = id;
+  renderImageGrid();
+
+  uploadImageToGitHub(file).then(url => {
+    const img = pendingImages.find(i => i.id === id);
+    if (img) { img.url = url; img.uploading = false; URL.revokeObjectURL(img.localUrl); img.localUrl = null; }
+    renderImageGrid();
+  }).catch(() => {
+    const img = pendingImages.find(i => i.id === id);
+    if (img) { img.uploading = false; img.error = true; }
+    renderImageGrid();
+    toast('Ошибка загрузки изображения', 'error');
+  });
+}
+
+async function uploadImageToGitHub(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = async e => {
+      const base64 = e.target.result.split(',')[1];
+      const ext    = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const fname  = `${Date.now()}_${Math.random().toString(36).slice(2, 6)}.${ext}`;
+      const path   = `images/products/${fname}`;
+      try {
+        await ghPut(path, base64, null, `Фото: ${fname}`, true);
+        resolve(`https://raw.githubusercontent.com/${REPO}/main/${path}`);
+      } catch (err) { reject(err); }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderImageGrid() {
+  const grid = document.getElementById('imgGrid');
+  if (!pendingImages.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = pendingImages.map(img => `
+    <div class="img-thumb ${img.id === primaryImageId ? 'img-thumb--primary' : ''}">
+      ${img.uploading
+        ? `<div class="img-thumb__spinner"></div>`
+        : img.error
+          ? `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>`
+          : `<img src="${esc(img.localUrl || img.url)}" alt="" />`
+      }
+      ${!img.uploading ? `
+        <button class="img-thumb__del" type="button" onclick="removeImage('${img.id}')">✕</button>
+        <button class="img-thumb__star" type="button" onclick="setPrimaryImage('${img.id}')" title="Сделать основным">★</button>
+      ` : ''}
+    </div>
+  `).join('');
+}
+
+function removeImage(id) {
+  pendingImages = pendingImages.filter(i => i.id !== id);
+  if (primaryImageId === id) primaryImageId = pendingImages[0]?.id || null;
+  renderImageGrid();
+}
+
+function setPrimaryImage(id) {
+  primaryImageId = id;
+  const idx = pendingImages.findIndex(i => i.id === id);
+  if (idx > 0) {
+    const [item] = pendingImages.splice(idx, 1);
+    pendingImages.unshift(item);
+  }
+  renderImageGrid();
+}
+
+function loadProductImages(p) {
+  pendingImages = [];
+  primaryImageId = null;
+  const urls = p.images?.length ? p.images : (p.image ? [p.image] : []);
+  urls.forEach((url, i) => {
+    const id = uid();
+    pendingImages.push({ id, url, localUrl: null, uploading: false, error: false });
+    if (i === 0) primaryImageId = id;
+  });
+  renderImageGrid();
+}
+
 /* ===================== SAVE PRODUCT ===================== */
 async function saveProduct(e) {
   e.preventDefault();
+
+  const uploading = pendingImages.filter(i => i.uploading);
+  if (uploading.length) { toast('Подождите, фото ещё загружаются...', 'error'); return; }
+
   const btn = document.getElementById('saveBtn');
   btn.disabled = true;
   btn.textContent = 'Публикуется...';
@@ -221,6 +332,12 @@ async function saveProduct(e) {
 
   const sizesRaw = document.getElementById('fSizes').value;
   const sizes = sizesRaw ? sizesRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+  const readyImages = pendingImages.filter(i => !i.uploading && !i.error && (i.url || i.localUrl));
+  const imageUrls   = readyImages.map(i => i.url || i.localUrl);
+  const primaryUrl  = imageUrls[0] || '';
+
+  const maxQtyVal = Number(document.getElementById('fMaxQty').value) || null;
 
   const product = {
     id:       id || uid(),
@@ -232,7 +349,9 @@ async function saveProduct(e) {
     category: document.getElementById('fCategory').value,
     sizes,
     badge:    document.getElementById('fBadge').value || null,
-    image:    document.getElementById('fImage').value.trim(),
+    image:    primaryUrl,
+    images:   imageUrls,
+    maxQty:   maxQtyVal,
     inStock:  document.getElementById('fInStock').checked,
   };
 
@@ -274,11 +393,11 @@ function editProduct(id) {
   document.getElementById('fCategory').value       = p.category || '';
   document.getElementById('fSizes').value          = (p.sizes || []).join(', ');
   document.getElementById('fBadge').value          = p.badge || '';
-  document.getElementById('fImage').value          = p.image || '';
+  document.getElementById('fMaxQty').value         = p.maxQty || '';
   document.getElementById('fInStock').checked      = p.inStock;
   document.getElementById('formTitle').textContent = 'Редактировать товар';
 
-  previewImage(p.image);
+  loadProductImages(p);
   showSection('add');
   // чтобы nav не сломал active
   document.querySelectorAll('.sidebar__link')[1].classList.add('active');
@@ -316,28 +435,22 @@ function closeModal() {
 
 /* ===================== FORM ===================== */
 function resetForm() {
-  document.getElementById('editId').value    = '';
-  document.getElementById('fName').value     = '';
-  document.getElementById('fBrand').value    = '';
-  document.getElementById('fPrice').value    = '';
-  document.getElementById('fOldPrice').value = '';
-  document.getElementById('fDesc').value     = '';
-  document.getElementById('fCategory').value = '';
-  document.getElementById('fSizes').value    = '';
-  document.getElementById('fBadge').value    = '';
-  document.getElementById('fImage').value    = '';
+  document.getElementById('editId').value     = '';
+  document.getElementById('fName').value      = '';
+  document.getElementById('fBrand').value     = '';
+  document.getElementById('fPrice').value     = '';
+  document.getElementById('fOldPrice').value  = '';
+  document.getElementById('fDesc').value      = '';
+  document.getElementById('fCategory').value  = '';
+  document.getElementById('fSizes').value     = '';
+  document.getElementById('fBadge').value     = '';
+  document.getElementById('fMaxQty').value    = '';
   document.getElementById('fInStock').checked = true;
-  previewImage('');
+  pendingImages  = [];
+  primaryImageId = null;
+  renderImageGrid();
 }
 
-function previewImage(url) {
-  const el = document.getElementById('imgPreview');
-  if (url) {
-    el.innerHTML = `<img src="${esc(url)}" alt="" onerror="this.parentElement.innerHTML='<span>Не удалось загрузить изображение</span>'" />`;
-  } else {
-    el.innerHTML = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Превью изображения</span>`;
-  }
-}
 
 /* ===================== TOAST ===================== */
 function toast(msg, type = '') {

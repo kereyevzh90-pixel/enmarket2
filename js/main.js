@@ -321,8 +321,13 @@ function addToCart(id, size) {
   if (!p) return;
   const key  = id + (size || '');
   const item = cart.find(c => c._key === key);
-  if (item) { item.qty++; }
-  else { cart.push({ ...p, qty: 1, selectedSize: size || null, _key: key }); }
+  const max  = p.maxQty || Infinity;
+  if (item) {
+    if (item.qty >= max) { showToast(`Максимум ${max} шт. в одном заказе`); return; }
+    item.qty++;
+  } else {
+    cart.push({ ...p, qty: 1, selectedSize: size || null, _key: key });
+  }
   saveCart();
   showToast(`«${p.name}» добавлен в корзину`);
 }
@@ -330,7 +335,8 @@ function addToCart(id, size) {
 function changeQty(key, delta) {
   const item = cart.find(c => c._key === key);
   if (!item) return;
-  item.qty = Math.max(1, item.qty + delta);
+  const max = item.maxQty || Infinity;
+  item.qty = Math.min(max, Math.max(1, item.qty + delta));
   saveCart();
   renderCart();
 }
@@ -377,7 +383,7 @@ function renderCart() {
             <div class="cart-item__qty">
               <button onclick="changeQty('${esc(c._key)}', -1)">−</button>
               <span>${c.qty}</span>
-              <button onclick="changeQty('${esc(c._key)}', 1)">+</button>
+              <button onclick="changeQty('${esc(c._key)}', 1)" ${c.maxQty && c.qty >= c.maxQty ? 'disabled title="Достигнут лимит"' : ''}>+</button>
             </div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
