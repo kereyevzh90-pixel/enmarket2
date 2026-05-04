@@ -1,41 +1,18 @@
 [
   {
-    "id": "mork7sni8srdx",
+    "id": "morkanwl9hzvp",
     "name": "тест2",
     "brand": null,
     "price": 0,
-    "oldPrice": 1e+139,
-    "description": "уааааа",
+    "oldPrice": 1e+190,
+    "description": "",
     "category": "kids",
     "sizes": [
       "36"
     ],
     "badge": null,
-    "image": "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777920865417_bw0r.png",
-    "images": [
-      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777920865417_bw0r.png",
-      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777920854919_m5lq.png"
-    ],
-    "maxQty": 1e+111,
-    "inStock": true
-  },
-  {
-    "id": "morkcdqdqfuf8",
-    "name": "тест3",
-    "brand": null,
-    "price": 1e+108,
-    "oldPrice": null,
-    "description": "36363",
-    "category": "kids",
-    "sizes": [
-      "36"
-    ],
-    "badge": null,
-    "image": "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777921104769_ku1x.png",
-    "images": [
-      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777921104769_ku1x.png",
-      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777921097497_c1ul.png"
-    ],
+    "image": "",
+    "images": [],
     "maxQty": 1,
     "inStock": true
   }
