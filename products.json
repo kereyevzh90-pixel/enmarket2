@@ -18,5 +18,22 @@
     ],
     "maxQty": 1e+111,
     "inStock": true
+  },
+  {
+    "id": "morkanwl9hzvp",
+    "name": "тест2",
+    "brand": null,
+    "price": 0,
+    "oldPrice": 1e+190,
+    "description": "",
+    "category": "kids",
+    "sizes": [
+      "36"
+    ],
+    "badge": null,
+    "image": "",
+    "images": [],
+    "maxQty": 1,
+    "inStock": true
   }
 ]
