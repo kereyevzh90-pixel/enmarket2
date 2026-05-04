@@ -20,19 +20,22 @@
     "inStock": true
   },
   {
-    "id": "morkanwl9hzvp",
-    "name": "тест2",
+    "id": "morkcdqdqfuf8",
+    "name": "тест3",
     "brand": null,
-    "price": 0,
-    "oldPrice": 1e+190,
-    "description": "",
+    "price": 1e+108,
+    "oldPrice": null,
+    "description": "36363",
     "category": "kids",
     "sizes": [
       "36"
     ],
     "badge": null,
-    "image": "",
-    "images": [],
+    "image": "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777921104769_ku1x.png",
+    "images": [
+      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777921104769_ku1x.png",
+      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1777921097497_c1ul.png"
+    ],
     "maxQty": 1,
     "inStock": true
   }
