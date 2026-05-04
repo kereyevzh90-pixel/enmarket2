@@ -123,6 +123,7 @@ img { max-width: 100%; display: block; }
   border-radius: 99px;
   display: flex; align-items: center; justify-content: center;
 }
+.hbtn--cart .cart-count:empty { display: none; }
 
 .burger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 8px; border-radius: 4px; }
 .burger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: .25s; }
