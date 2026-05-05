@@ -3,23 +3,59 @@ window.addEventListener('scroll', () => {
   document.getElementById('header').classList.toggle('scrolled', window.scrollY > 10);
 });
 
-/* ===================== BURGER ===================== */
-function toggleMenu() {
-  document.getElementById('nav').classList.toggle('open');
-}
-document.querySelectorAll('.nav__item').forEach(l => {
-  l.addEventListener('click', () => document.getElementById('nav').classList.remove('open'));
-});
-
 /* ===================== SEARCH ===================== */
-document.getElementById('searchInput').addEventListener('input', e => {
-  const q = e.target.value.trim().toLowerCase();
+function openSearch() {
+  document.getElementById('searchOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('searchOverlayInput').focus(), 100);
+}
+function closeSearch(e) {
+  if (!e || e.target === document.getElementById('searchOverlay')) {
+    document.getElementById('searchOverlay').classList.remove('open');
+    document.getElementById('searchOverlayInput').value = '';
+    renderGrid(applyFiltersResult());
+  }
+}
+function doSearch(q) {
+  q = q.trim().toLowerCase();
   renderGrid(q ? allProducts.filter(p =>
     p.name.toLowerCase().includes(q) ||
     (p.category||'').toLowerCase().includes(q) ||
     (p.brand||'').toLowerCase().includes(q)
   ) : applyFiltersResult());
-});
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSearch(); closeDrawer(); });
+
+/* ===================== MENU DRAWER ===================== */
+function openDrawer() {
+  document.getElementById('menuDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeDrawer() {
+  document.getElementById('menuDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+function setTabFromDrawer(val) {
+  const tabs = document.querySelectorAll('.ctab');
+  tabs.forEach(b => b.classList.remove('active'));
+  const tab = [...tabs].find(b => b.getAttribute('onclick').includes(`'${val}'`));
+  if (tab) tab.classList.add('active');
+  activeCat = val;
+  activeSubcat = '';
+  renderGrid(applyFiltersResult());
+  closeDrawer();
+  document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* ===================== BOTTOM FILTERS ===================== */
+let bfilterOpen = false;
+function toggleBfilter() {
+  bfilterOpen = !bfilterOpen;
+  document.getElementById('bfilterPanel').classList.toggle('open', bfilterOpen);
+}
+function closeBfilter() {
+  bfilterOpen = false;
+  document.getElementById('bfilterPanel').classList.remove('open');
+}
 
 function selectCatFilter(cat, label) {
   document.getElementById('catFilterLabel').textContent = label;
