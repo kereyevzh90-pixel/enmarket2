@@ -22,111 +22,15 @@
   <!-- HEADER -->
   <header class="header" id="header">
     <div class="container header__inner">
-
-      <!-- Logo -->
       <a href="/" class="logo">
         <img src="images/logo2.png" alt="Aiko Sarken" class="logo-img" />
         <span class="logo-text">Aiko Sarken</span>
       </a>
-
-      <!-- Main nav -->
-      <nav class="nav" id="nav">
-        <a href="#" class="nav__item nav__item--women" data-cat="women">
-          Женщинам
-          <div class="mega-menu">
-            <div class="mega-menu__col">
-              <h4>Одежда</h4>
-              <a href="#">Платья</a>
-              <a href="#">Блузки</a>
-              <a href="#">Юбки</a>
-              <a href="#">Джинсы</a>
-              <a href="#">Пальто и куртки</a>
-              <a href="#">Свитеры и кардиганы</a>
-            </div>
-            <div class="mega-menu__col">
-              <h4>Обувь</h4>
-              <a href="#">Кроссовки</a>
-              <a href="#">Туфли</a>
-              <a href="#">Сапоги</a>
-              <a href="#">Босоножки</a>
-            </div>
-            <div class="mega-menu__col">
-              <h4>Аксессуары</h4>
-              <a href="#">Сумки</a>
-              <a href="#">Украшения</a>
-              <a href="#">Очки</a>
-              <a href="#">Ремни</a>
-            </div>
-          </div>
-        </a>
-        <a href="#" class="nav__item" data-cat="men">
-          Мужчинам
-          <div class="mega-menu">
-            <div class="mega-menu__col">
-              <h4>Одежда</h4>
-              <a href="#">Футболки и поло</a>
-              <a href="#">Джинсы</a>
-              <a href="#">Костюмы</a>
-              <a href="#">Куртки</a>
-              <a href="#">Свитеры</a>
-            </div>
-            <div class="mega-menu__col">
-              <h4>Обувь</h4>
-              <a href="#">Кроссовки</a>
-              <a href="#">Туфли</a>
-              <a href="#">Ботинки</a>
-            </div>
-            <div class="mega-menu__col">
-              <h4>Аксессуары</h4>
-              <a href="#">Ремни</a>
-              <a href="#">Часы</a>
-              <a href="#">Кошельки</a>
-            </div>
-          </div>
-        </a>
-        <a href="#" class="nav__item" data-cat="kids">
-          Детям
-          <div class="mega-menu">
-            <div class="mega-menu__col">
-              <h4>Девочкам</h4>
-              <a href="#">Платья</a>
-              <a href="#">Футболки</a>
-              <a href="#">Брюки</a>
-            </div>
-            <div class="mega-menu__col">
-              <h4>Мальчикам</h4>
-              <a href="#">Футболки</a>
-              <a href="#">Джинсы</a>
-              <a href="#">Куртки</a>
-            </div>
-          </div>
-        </a>
-        <a href="#" class="nav__item nav__item--sale">Распродажа</a>
-        <a href="#" class="nav__item">Бренды</a>
-      </nav>
-
-      <!-- Actions -->
       <div class="header__actions">
-        <button class="hbtn" title="Избранное" onclick="showToast('Раздел в разработке')">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </button>
         <button class="hbtn hbtn--cart" onclick="toggleCart()" title="Корзина">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
           <span class="cart-count" id="cartCount"></span>
         </button>
-        <button class="burger" id="burger" onclick="toggleMenu()">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Search bar in header -->
-    <div class="header__search">
-      <div class="container">
-        <div class="main-search">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input id="searchInput" type="text" placeholder="Поиск одежды, обуви, брендов..." />
-        </div>
       </div>
     </div>
   </header>

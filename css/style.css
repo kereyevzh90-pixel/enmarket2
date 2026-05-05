@@ -43,8 +43,13 @@ img { max-width: 100%; display: block; }
 .header__inner {
   display: flex;
   align-items: center;
+  justify-content: center;
   height: var(--header-h);
-  gap: 24px;
+  position: relative;
+}
+.header__inner .header__actions {
+  position: absolute;
+  right: 0;
 }
 
 .logo {
