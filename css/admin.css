@@ -37,9 +37,15 @@ a { text-decoration: none; color: inherit; }
   gap: 16px;
 }
 .auth-logo {
-  font-size: 26px;
-  font-weight: 800;
   margin-bottom: 8px;
+  display: flex;
+  justify-content: center;
+}
+.auth-logo .logo-img {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 8px;
 }
 .auth-card h2 { font-size: 24px; font-weight: 800; }
 .auth-sub { color: var(--muted); font-size: 14px; line-height: 1.6; }
@@ -174,11 +180,17 @@ select { cursor: pointer; }
   z-index: 10;
 }
 .sidebar__logo {
-  font-size: 20px;
-  font-weight: 800;
-  color: #fff;
-  padding: 24px 20px;
+  padding: 20px;
   border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar__logo .logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 6px;
 }
 .sidebar__nav {
   flex: 1;
