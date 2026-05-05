@@ -39,7 +39,6 @@ function toggleScat(el) {
 function filterSubcat(cat, subcat) {
   activeCat = cat;
   activeSubcat = subcat;
-  document.getElementById('catalogTitle').textContent = subcat;
   renderGrid(applyFiltersResult());
   document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
   return false;
@@ -49,8 +48,6 @@ function filterSubcat(cat, subcat) {
 function setTab(btn, val) {
   document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  const titles = { '': 'Все товары', new: 'Новинки', sale: 'Скидки', women: 'Женщинам', men: 'Мужчинам', kids: 'Детям' };
-  document.getElementById('catalogTitle').textContent = titles[val] || 'Все товары';
   activeCat = val;
   activeSubcat = '';
   renderGrid(applyFiltersResult());
@@ -204,8 +201,6 @@ function applySort(val) {
 function filterCat(cat) {
   activeCat = cat;
   activeSubcat = '';
-  const titles = { women: 'Женщинам', men: 'Мужчинам', kids: 'Детям', sale: 'Распродажа', '': 'Все товары' };
-  document.getElementById('catalogTitle').textContent = titles[cat] || 'Все товары';
   document.querySelectorAll('.ctab').forEach(b => b.classList.remove('active'));
   const tab = [...document.querySelectorAll('.ctab')].find(b => b.getAttribute('onclick').includes(`'${cat}'`));
   if (tab) tab.classList.add('active');
@@ -236,7 +231,6 @@ function resetFilters() {
   document.getElementById('sortFilterLabel').textContent  = 'Сортировка';
   document.getElementById('sortFilterBtn').classList.remove('active');
   document.querySelectorAll('.ctab').forEach((b,i) => b.classList.toggle('active', i === 0));
-  document.getElementById('catalogTitle').textContent = 'Все товары';
   document.getElementById('resetBtn').style.display = 'none';
   closeDropdowns();
   renderGrid(allProducts);

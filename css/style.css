@@ -290,13 +290,6 @@ img { max-width: 100%; display: block; }
 /* Catalog right */
 .catalog__right { flex: 1; min-width: 0; }
 
-.catalog__head {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.catalog__head h2 { font-size: 22px; font-weight: 700; }
 .catalog__count { font-size: 13px; color: var(--muted); }
 
 /* Sub-tabs */
