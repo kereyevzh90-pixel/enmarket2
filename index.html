@@ -35,20 +35,6 @@
     </div>
   </header>
 
-  <!-- FEATURED CAROUSEL -->
-  <section class="featured" id="featured">
-    <div class="featured__wrap">
-      <div class="featured__track" id="featuredTrack"></div>
-    </div>
-    <button class="featured__arrow featured__arrow--prev" onclick="featSlide(-1)">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <button class="featured__arrow featured__arrow--next" onclick="featSlide(1)">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-    <div class="featured__dots" id="featuredDots"></div>
-  </section>
-
   <!-- CATALOG -->
   <section class="catalog" id="catalog">
     <div class="container catalog__inner">
@@ -216,6 +202,20 @@
           <button class="hfilter-reset" id="resetBtn" onclick="resetFilters()" style="display:none">
             ✕ Сбросить
           </button>
+        </div>
+
+        <!-- FEATURED CAROUSEL -->
+        <div class="featured" id="featured">
+          <div class="featured__wrap">
+            <div class="featured__track" id="featuredTrack"></div>
+          </div>
+          <button class="featured__arrow featured__arrow--prev" onclick="featSlide(-1)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="featured__arrow featured__arrow--next" onclick="featSlide(1)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="featured__dots" id="featuredDots"></div>
         </div>
 
         <!-- Empty state -->
