@@ -81,7 +81,7 @@ let selectedSizes  = [];
 let selectedColors = [];
 let selectedBrands = [];
 let saleOnly = false;
-let activeCat = '';
+let activeCat = 'women';
 let activeSubcat = '';
 
 function updateFilterLabel(labelId, btnId, values, defaultText) {
