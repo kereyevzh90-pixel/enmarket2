@@ -301,7 +301,7 @@ img { max-width: 100%; display: block; }
 .catalog__tabs {
   display: flex;
   gap: 0;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 1px solid var(--border);
   margin-bottom: 16px;
   overflow-x: auto;
 }
@@ -310,14 +310,14 @@ img { max-width: 100%; display: block; }
   font-size: 14px;
   font-weight: 500;
   border: none;
+  border-bottom: 3px solid transparent;
   background: none;
   cursor: pointer;
   font-family: inherit;
   color: var(--muted);
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
+  margin-bottom: -1px;
   white-space: nowrap;
-  transition: all .15s;
+  transition: color .15s, border-color .15s;
 }
 .ctab:hover { color: #1a1a1a; }
 .ctab.active { color: #1a1a1a; font-weight: 700; border-bottom-color: #1a1a1a; }
