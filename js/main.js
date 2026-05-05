@@ -244,9 +244,68 @@ async function loadProducts() {
     const r = await fetch('products.json?t=' + Date.now());
     allProducts = await r.json();
     renderGrid(allProducts);
+    initFeatured(allProducts);
   } catch(e) {
     console.error(e);
   }
+}
+
+/* ===================== FEATURED CAROUSEL ===================== */
+let featIndex = 0;
+let featTotal = 0;
+let featTimer = null;
+
+function initFeatured(products) {
+  const hits = products.filter(p => p.badge === 'Хит' && p.inStock !== false);
+  const others = products.filter(p => p.badge !== 'Хит' && p.inStock !== false);
+  const featured = [...hits, ...others].slice(0, 4);
+  if (!featured.length) { document.getElementById('featured').style.display = 'none'; return; }
+
+  featTotal = featured.length;
+  const track = document.getElementById('featuredTrack');
+  const dots  = document.getElementById('featuredDots');
+
+  track.innerHTML = featured.map((p, i) => {
+    const img = (p.images && p.images[0]) || p.image || '';
+    const price = p.price ? p.price.toLocaleString('ru-RU') + ' ₸' : '';
+    const old   = p.oldPrice ? p.oldPrice.toLocaleString('ru-RU') + ' ₸' : '';
+    return `
+      <div class="feat-slide" onclick="addToCart('${p.id}')">
+        <img class="feat-slide__img" src="${img}" alt="${p.name}" />
+        <div class="feat-slide__info">
+          ${p.badge ? `<span class="feat-slide__badge">${p.badge}</span>` : ''}
+          ${p.brand ? `<div class="feat-slide__brand">${p.brand}</div>` : ''}
+          <div class="feat-slide__name">${p.name}</div>
+          <div class="feat-slide__price">
+            <span class="feat-slide__price-new">${price}</span>
+            ${old ? `<span class="feat-slide__price-old">${old}</span>` : ''}
+          </div>
+          <button class="feat-slide__btn" onclick="event.stopPropagation();addToCart('${p.id}')">
+            В корзину
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+
+  dots.innerHTML = featured.map((_, i) =>
+    `<button class="feat-dot${i === 0 ? ' active' : ''}" onclick="featGoTo(${i})"></button>`
+  ).join('');
+
+  featStartTimer();
+}
+
+function featGoTo(idx) {
+  featIndex = (idx + featTotal) % featTotal;
+  document.getElementById('featuredTrack').style.transform = `translateX(-${featIndex * 100}%)`;
+  document.querySelectorAll('.feat-dot').forEach((d, i) => d.classList.toggle('active', i === featIndex));
+  featStartTimer();
+}
+
+function featSlide(dir) { featGoTo(featIndex + dir); }
+
+function featStartTimer() {
+  clearInterval(featTimer);
+  featTimer = setInterval(() => featGoTo(featIndex + 1), 4000);
 }
 
 /* ===================== RENDER ===================== */
