@@ -350,7 +350,7 @@ function renderGrid(list) {
   const empty = document.getElementById('emptyState');
   const count = document.getElementById('catalogCount');
 
-  count.textContent = list.length ? `${list.length} товаров` : '';
+  if (count) count.textContent = list.length ? `${list.length} товаров` : '';
 
   if (!list.length) {
     empty.style.display = '';
