@@ -257,6 +257,7 @@ img { max-width: 100%; display: block; }
 /* ===================== SIDEBAR CATS ===================== */
 .sidebar-cats {
   width: 220px;
+  box-sizing: border-box;
 }
 .scat-block { border-bottom: 1px solid var(--border); padding: 4px 0; }
 .scat-title {
@@ -1246,10 +1247,6 @@ body { padding-bottom: 56px; }
 
 /* ===================== AUTH PROMO CARD ===================== */
 .auth-promo-card {
-  background: var(--bg-soft);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
   margin: 12px 0 4px;
 }
 .auth-promo-card__icon { font-size: 24px; margin-bottom: 8px; }
