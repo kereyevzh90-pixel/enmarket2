@@ -35,7 +35,7 @@
         <span class="logo-text">Aiko Sarken</span>
       </a>
       <div class="header__actions">
-        <button class="hbtn" title="Избранное" onclick="showToast('Раздел в разработке')">
+        <button class="hbtn" id="favsBtn" title="Избранное" onclick="toggleFavsPanel()">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256"><path d="M223,57a58.07,58.07,0,0,0-81.92-.1L128,69.05,114.91,56.86A58,58,0,0,0,33,139l89.35,90.66a8,8,0,0,0,11.4,0L223,139a58,58,0,0,0,0-82Zm-11.35,70.76L128,212.6,44.3,127.68a42,42,0,0,1,59.4-59.4l.2.2,18.65,17.35a8,8,0,0,0,10.9,0L152.1,68.48l.2-.2a42,42,0,1,1,59.36,59.44Z"></path></svg>
         </button>
 
@@ -138,7 +138,13 @@
           <div class="scat-title scat-sale" onclick="filterCat('sale')">Распродажа</div>
         </div>
         <div class="scat-block scat-auth">
-          <button class="scat-auth-btn" id="authNavBtn" onclick="openAuth('register')">Войти / Регистрация</button>
+          <div class="scat-user-wrap">
+            <button class="scat-auth-btn" id="authNavBtn" onclick="openAuth('register')">Войти / Регистрация</button>
+            <div class="user-menu" id="userMenu">
+              <a href="#" onclick="showOrders();document.getElementById('userMenu').classList.remove('open');return false">Мои заказы</a>
+              <a href="#" onclick="_supa.auth.signOut().then(()=>{document.getElementById('userMenu').classList.remove('open');});return false">Выйти</a>
+            </div>
+          </div>
         </div>
       </aside>
     </div>
@@ -319,6 +325,27 @@
     </div>
   </div>
 
+  <!-- FAVS SIDEBAR -->
+  <div class="cart-overlay" id="favsOverlay" onclick="toggleFavsPanel()"></div>
+  <aside class="cart-sidebar" id="favsSidebar">
+    <div class="cart-sidebar__head">
+      <h3>Избранное <span id="favsQtyLabel"></span></h3>
+      <button onclick="toggleFavsPanel()">✕</button>
+    </div>
+    <div class="cart-sidebar__body" id="favsBody">
+      <div class="cart-empty"><p>Избранное пусто</p></div>
+    </div>
+  </aside>
+
+  <!-- ORDERS MODAL -->
+  <div class="auth-overlay" id="ordersOverlay" onclick="closeOrders(event)">
+    <div class="auth-modal" style="max-width:520px">
+      <button class="auth-modal__close" onclick="closeOrders()">✕</button>
+      <h2 class="auth-modal__title">Мои заказы</h2>
+      <div id="ordersBody" style="margin-top:16px;max-height:60vh;overflow-y:auto"></div>
+    </div>
+  </div>
+
   <!-- AUTH MODAL -->
   <div class="auth-overlay" id="authOverlay" onclick="closeAuth(event)">
     <div class="auth-modal" id="authModal">
@@ -436,10 +463,21 @@
       if (!btn) return;
       if (user) {
         btn.textContent = user.email.split('@')[0];
-        btn.onclick = async () => { await _supa.auth.signOut(); btn.textContent = 'Войти'; btn.onclick = () => openAuth('login'); };
+        btn.onclick = () => document.getElementById('userMenu').classList.toggle('open');
+      } else {
+        btn.textContent = 'Войти / Регистрация';
+        btn.onclick = () => openAuth('register');
+        document.getElementById('userMenu').classList.remove('open');
       }
     }
 
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.scat-user-wrap')) document.getElementById('userMenu')?.classList.remove('open');
+    });
+
+    _supa.auth.onAuthStateChange((event, session) => {
+      updateAuthBtn(session?.user || null);
+    });
     _supa.auth.getUser().then(({ data }) => { if (data?.user) updateAuthBtn(data.user); });
   </script>
   <script src="js/main.js"></script>

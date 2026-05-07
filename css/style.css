@@ -1178,3 +1178,68 @@ body { padding-bottom: 56px; }
 @media (max-width: 480px) {
   .auth-modal { padding: 28px 20px 24px; margin: 16px; }
 }
+
+/* ===================== USER MENU ===================== */
+.scat-user-wrap { position: relative; }
+.user-menu {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0; right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  z-index: 100;
+  overflow: hidden;
+}
+.user-menu.open { display: block; }
+.user-menu a {
+  display: block;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: none;
+  transition: background .15s;
+}
+.user-menu a:hover { background: var(--bg); }
+
+/* ===================== PRODUCT ALERT BUTTON ===================== */
+.product-card__alert {
+  position: absolute;
+  bottom: 8px; right: 8px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.9);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s, color .15s;
+  color: var(--muted);
+}
+.product-card__img:hover .product-card__alert { opacity: 1; }
+.product-card__alert.active { color: var(--accent); opacity: 1; }
+
+/* ===================== ORDERS ===================== */
+.orders-empty { text-align: center; color: var(--muted); padding: 32px 0; font-size: 15px; }
+.order-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.order-card__head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 8px; flex-wrap: wrap;
+}
+.order-id { font-weight: 700; font-size: 14px; }
+.order-date { color: var(--muted); font-size: 13px; margin-left: auto; }
+.order-status {
+  font-size: 12px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+}
+.order-status--new        { background: #dbeafe; color: #1d4ed8; }
+.order-status--processing { background: #fef3c7; color: #92400e; }
+.order-status--shipped    { background: #ede9fe; color: #6d28d9; }
+.order-status--delivered  { background: #dcfce7; color: #166534; }
+.order-items { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.order-total { font-weight: 700; font-size: 15px; }

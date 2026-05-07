@@ -373,8 +373,11 @@ function renderGrid(list) {
           }
           ${disc > 0 ? `<span class="product-card__badge product-card__badge--sale">−${disc}%</span>` : ''}
           ${p.badge && !disc ? `<span class="product-card__badge product-card__badge--new">${esc(p.badge)}</span>` : ''}
-          <button class="product-card__wish" onclick="event.stopPropagation();showToast('Добавлено в избранное')">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <button class="product-card__wish ${isFav(p.id) ? 'active' : ''}" data-fav-id="${esc(p.id)}" onclick="event.stopPropagation();toggleFav('${esc(p.id)}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="${isFav(p.id) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+          <button class="product-card__alert" data-alert-id="${esc(p.id)}" title="Уведомить о снижении цены" onclick="event.stopPropagation();toggleAlert('${esc(p.id)}')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           </button>
           ${sizes ? `<div class="product-card__sizes">${sizes}</div>` : ''}
         </div>
@@ -439,6 +442,7 @@ function removeItem(key) {
 function saveCart() {
   localStorage.setItem('em_cart', JSON.stringify(cart));
   renderCart();
+  if (typeof saveCartToSupabase === 'function') saveCartToSupabase();
 }
 
 function renderCart() {
@@ -484,7 +488,7 @@ function renderCart() {
     </div>
     <div class="cart-footer">
       <div class="cart-total"><span>Итого:</span><strong>${fmt(sum)}</strong></div>
-      <button class="btn btn--primary" style="width:100%;justify-content:center;height:48px" onclick="showToast('Оформление заказа скоро будет доступно!')">Оформить заказ</button>
+      <button class="btn btn--primary" style="width:100%;justify-content:center;height:48px" onclick="placeOrder()">Оформить заказ</button>
     </div>
   `;
 }
@@ -514,3 +518,158 @@ function fmt(n) {
 /* ===================== INIT ===================== */
 loadProducts();
 renderCart();
+
+/* ===================== SUPABASE SYNC ===================== */
+let currentUser = null;
+let userFavs = new Set(JSON.parse(localStorage.getItem('em_favs') || '[]'));
+
+async function initSupabaseSync() {
+  if (typeof _supa === 'undefined') return;
+  const { data } = await _supa.auth.getUser();
+  currentUser = data?.user || null;
+  if (currentUser) {
+    await loadFavsFromSupabase();
+    await syncCartOnLogin();
+    renderGrid(applyFiltersResult());
+    renderFavsCount();
+  }
+}
+
+/* ---- Favorites ---- */
+async function loadFavsFromSupabase() {
+  if (!currentUser) return;
+  const { data } = await _supa.from('favorites').select('product_id').eq('user_id', currentUser.id);
+  if (data) {
+    userFavs = new Set(data.map(f => f.product_id));
+    localStorage.setItem('em_favs', JSON.stringify([...userFavs]));
+  }
+}
+
+function isFav(id) { return userFavs.has(String(id)); }
+
+async function toggleFav(id) {
+  id = String(id);
+  if (!currentUser) { showToast('Войдите в аккаунт для сохранения'); openAuth('login'); return; }
+  if (isFav(id)) {
+    userFavs.delete(id);
+    await _supa.from('favorites').delete().eq('user_id', currentUser.id).eq('product_id', id);
+    showToast('Удалено из избранного');
+  } else {
+    userFavs.add(id);
+    await _supa.from('favorites').insert({ user_id: currentUser.id, product_id: id });
+    showToast('Добавлено в избранное');
+  }
+  localStorage.setItem('em_favs', JSON.stringify([...userFavs]));
+  document.querySelectorAll(`[data-fav-id="${id}"]`).forEach(btn => btn.classList.toggle('active', isFav(id)));
+  renderFavsCount();
+  if (document.getElementById('favsSidebar').classList.contains('open')) renderFavsPanel();
+}
+
+function renderFavsCount() {
+  const total = userFavs.size;
+  document.getElementById('favsQtyLabel').textContent = total ? `(${total})` : '';
+}
+
+/* ---- Favs panel ---- */
+function toggleFavsPanel() {
+  const sidebar = document.getElementById('favsSidebar');
+  const overlay = document.getElementById('favsOverlay');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('open');
+  document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+  if (sidebar.classList.contains('open')) renderFavsPanel();
+}
+
+function renderFavsPanel() {
+  const body = document.getElementById('favsBody');
+  const favProducts = allProducts.filter(p => isFav(p.id));
+  if (!favProducts.length) {
+    body.innerHTML = '<div class="cart-empty"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><p>Избранное пусто</p></div>';
+    return;
+  }
+  body.innerHTML = `<div class="cart-list">${favProducts.map(p => `
+    <div class="cart-item">
+      <button class="cart-item__del" onclick="toggleFav('${esc(p.id)}')">✕</button>
+      <div class="cart-item__img">${p.image ? `<img src="${esc(p.image)}" alt="" onerror="this.style.display='none'" />` : ''}</div>
+      <div class="cart-item__body">
+        ${p.brand ? `<div class="product-card__brand">${esc(p.brand)}</div>` : ''}
+        <div class="cart-item__name">${esc(p.name)}</div>
+        <div class="cart-item__price">${fmt(p.price)}</div>
+        <button class="btn-add" style="margin-top:8px;font-size:13px;height:36px" onclick="addToCart('${esc(p.id)}')">В корзину</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+/* ---- Cart sync ---- */
+async function syncCartOnLogin() {
+  if (!currentUser) return;
+  const { data } = await _supa.from('cart').select('items').eq('user_id', currentUser.id).maybeSingle();
+  const serverItems = data?.items || [];
+  const merged = [...cart];
+  serverItems.forEach(si => { if (!merged.find(li => li._key === si._key)) merged.push(si); });
+  cart = merged;
+  saveCart();
+}
+
+async function saveCartToSupabase() {
+  if (!currentUser) return;
+  await _supa.from('cart').upsert({ user_id: currentUser.id, items: cart, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
+}
+
+/* ---- Orders ---- */
+async function placeOrder() {
+  if (!currentUser) { showToast('Войдите для оформления заказа'); toggleCart(); openAuth('login'); return; }
+  if (!cart.length) return;
+  const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+  const items = cart.map(c => ({ id: c.id, name: c.name, price: c.price, qty: c.qty, size: c.selectedSize || null, image: c.image || null }));
+  const { error } = await _supa.from('orders').insert({ user_id: currentUser.id, items, total, status: 'new' });
+  if (error) { showToast('Ошибка оформления'); return; }
+  cart = [];
+  saveCart();
+  saveCartToSupabase();
+  toggleCart();
+  showToast('Заказ оформлен! Мы свяжемся с вами.');
+}
+
+async function showOrders() {
+  if (!currentUser) { openAuth('login'); return; }
+  document.getElementById('ordersOverlay').classList.add('open');
+  document.getElementById('ordersBody').innerHTML = '<p style="color:var(--muted);text-align:center;padding:24px">Загрузка...</p>';
+  const { data: orders } = await _supa.from('orders').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+  const body = document.getElementById('ordersBody');
+  if (!orders?.length) { body.innerHTML = '<p class="orders-empty">У вас ещё нет заказов</p>'; return; }
+  const statusMap = { new: 'Новый', processing: 'В обработке', shipped: 'Отправлен', delivered: 'Доставлен' };
+  body.innerHTML = orders.map(o => `
+    <div class="order-card">
+      <div class="order-card__head">
+        <span class="order-id">#${o.id.slice(-6).toUpperCase()}</span>
+        <span class="order-status order-status--${o.status}">${statusMap[o.status] || o.status}</span>
+        <span class="order-date">${new Date(o.created_at).toLocaleDateString('ru-RU')}</span>
+      </div>
+      <div class="order-items">${(o.items||[]).map(i => `${i.name} × ${i.qty}`).join(', ')}</div>
+      <div class="order-total">${fmt(o.total)}</div>
+    </div>`).join('');
+}
+
+function closeOrders(e) {
+  if (e && e.target !== document.getElementById('ordersOverlay')) return;
+  document.getElementById('ordersOverlay').classList.remove('open');
+}
+
+/* ---- Price alerts ---- */
+async function toggleAlert(id) {
+  if (!currentUser) { showToast('Войдите для получения уведомлений'); openAuth('login'); return; }
+  const { data } = await _supa.from('price_alerts').select('id').eq('user_id', currentUser.id).eq('product_id', id).maybeSingle();
+  if (data) {
+    await _supa.from('price_alerts').delete().eq('id', data.id);
+    showToast('Уведомление отменено');
+    document.querySelectorAll(`[data-alert-id="${id}"]`).forEach(btn => btn.classList.remove('active'));
+  } else {
+    const p = allProducts.find(p => p.id == id);
+    await _supa.from('price_alerts').insert({ user_id: currentUser.id, product_id: String(id), target_price: p?.price || 0 });
+    showToast('Уведомим когда цена снизится!');
+    document.querySelectorAll(`[data-alert-id="${id}"]`).forEach(btn => btn.classList.add('active'));
+  }
+}
+
+initSupabaseSync();
