@@ -138,11 +138,20 @@
           <div class="scat-title scat-sale" onclick="filterCat('sale')">Распродажа</div>
         </div>
         <div class="scat-block scat-auth">
-          <div class="scat-user-wrap">
-            <button class="scat-auth-btn" id="authNavBtn" onclick="openAuth('register')">Войти / Регистрация</button>
-            <div class="user-menu" id="userMenu">
-              <a href="#" onclick="showOrders();document.getElementById('userMenu').classList.remove('open');return false">Мои заказы</a>
-              <a href="#" onclick="_supa.auth.signOut().then(()=>{document.getElementById('userMenu').classList.remove('open');});return false">Выйти</a>
+          <div class="auth-promo-card" id="authPromoCard">
+            <div class="auth-promo-card__icon">🤔</div>
+            <div class="auth-promo-card__title">Потеряли сохранённые товары?</div>
+            <div class="auth-promo-card__sub">Синхронизируйте на всех устройствах корзину, профиль и избранное</div>
+            <button class="auth-promo-card__btn" onclick="openAuth('login')">Войти</button>
+          </div>
+          <div class="auth-user-card" id="authUserCard" style="display:none">
+            <div class="auth-user-card__name" id="authUserName"></div>
+            <div class="scat-user-wrap">
+              <button class="auth-promo-card__btn auth-promo-card__btn--outline" id="authNavBtn" onclick="document.getElementById('userMenu').classList.toggle('open')">Мой аккаунт</button>
+              <div class="user-menu" id="userMenu">
+                <a href="#" onclick="showOrders();document.getElementById('userMenu').classList.remove('open');return false">Мои заказы</a>
+                <a href="#" onclick="_supa.auth.signOut().then(()=>{document.getElementById('userMenu').classList.remove('open');});return false">Выйти</a>
+              </div>
             </div>
           </div>
         </div>
@@ -459,15 +468,17 @@
     }
 
     function updateAuthBtn(user) {
-      const btn = document.getElementById('authNavBtn');
-      if (!btn) return;
+      const promoCard = document.getElementById('authPromoCard');
+      const userCard  = document.getElementById('authUserCard');
+      const userName  = document.getElementById('authUserName');
       if (user) {
-        btn.textContent = user.email.split('@')[0];
-        btn.onclick = () => document.getElementById('userMenu').classList.toggle('open');
+        if (promoCard) promoCard.style.display = 'none';
+        if (userCard)  userCard.style.display  = '';
+        if (userName)  userName.textContent = user.email.split('@')[0];
       } else {
-        btn.textContent = 'Войти / Регистрация';
-        btn.onclick = () => openAuth('register');
-        document.getElementById('userMenu').classList.remove('open');
+        if (promoCard) promoCard.style.display = '';
+        if (userCard)  userCard.style.display  = 'none';
+        document.getElementById('userMenu')?.classList.remove('open');
       }
     }
 
