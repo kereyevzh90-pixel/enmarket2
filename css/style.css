@@ -1273,3 +1273,39 @@ body { padding-bottom: 56px; }
   margin-bottom: 8px;
   padding: 0 2px;
 }
+
+/* ===================== AUTH BAR (full width) ===================== */
+.auth-bar {
+  margin-top: 16px;
+}
+.auth-bar--user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.auth-bar__name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.auth-bar__btn {
+  display: block;
+  width: 100%;
+  padding: 13px;
+  background: var(--text);
+  color: #fff;
+  border: 2px solid var(--text);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity .15s;
+  text-align: center;
+  font-family: inherit;
+}
+.auth-bar__btn:hover { opacity: .85; }
+.auth-bar__btn--outline {
+  background: #fff;
+  color: var(--text);
+  width: auto;
+  padding: 10px 20px;
+}

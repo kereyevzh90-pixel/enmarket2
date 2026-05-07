@@ -137,22 +137,22 @@
         <div class="scat-block">
           <div class="scat-title scat-sale" onclick="filterCat('sale')">Распродажа</div>
         </div>
-        <div class="scat-block scat-auth">
-          <div class="auth-promo-card" id="authPromoCard">
-            <button class="auth-promo-card__btn" onclick="openAuth('login')">Войти</button>
-          </div>
-          <div class="auth-user-card" id="authUserCard" style="display:none">
-            <div class="auth-user-card__name" id="authUserName"></div>
-            <div class="scat-user-wrap">
-              <button class="auth-promo-card__btn auth-promo-card__btn--outline" id="authNavBtn" onclick="document.getElementById('userMenu').classList.toggle('open')">Мой аккаунт</button>
-              <div class="user-menu" id="userMenu">
-                <a href="#" onclick="showOrders();document.getElementById('userMenu').classList.remove('open');return false">Мои заказы</a>
-                <a href="#" onclick="_supa.auth.signOut().then(()=>{document.getElementById('userMenu').classList.remove('open');});return false">Выйти</a>
-              </div>
-            </div>
+      </aside>
+
+      <!-- AUTH BAR full width -->
+      <div class="auth-bar" id="authPromoCard">
+        <button class="auth-bar__btn" onclick="openAuth('login')">Войти</button>
+      </div>
+      <div class="auth-bar auth-bar--user" id="authUserCard" style="display:none">
+        <span class="auth-bar__name" id="authUserName"></span>
+        <div class="scat-user-wrap">
+          <button class="auth-bar__btn auth-bar__btn--outline" id="authNavBtn" onclick="document.getElementById('userMenu').classList.toggle('open')">Мой аккаунт</button>
+          <div class="user-menu" id="userMenu">
+            <a href="#" onclick="showOrders();document.getElementById('userMenu').classList.remove('open');return false">Мои заказы</a>
+            <a href="#" onclick="_supa.auth.signOut().then(()=>{document.getElementById('userMenu').classList.remove('open');});return false">Выйти</a>
           </div>
         </div>
-      </aside>
+      </div>
     </div>
   </section>
 
