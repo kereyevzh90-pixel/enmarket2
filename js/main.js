@@ -567,6 +567,8 @@ async function toggleFav(id) {
 function renderFavsCount() {
   const total = userFavs.size;
   document.getElementById('favsQtyLabel').textContent = total ? `(${total})` : '';
+  const badge = document.getElementById('favsCount');
+  if (badge) badge.textContent = total || '';
 }
 
 /* ---- Favs panel ---- */
