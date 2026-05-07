@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "moviacp24iaiz",
+    "name": "что то 1",
+    "brand": null,
+    "price": 999999,
+    "oldPrice": 999999,
+    "description": "",
+    "category": "men",
+    "sizes": [
+      "36"
+    ],
+    "badge": null,
+    "image": "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1778159536875_3dut.png",
+    "images": [
+      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1778159536875_3dut.png",
+      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1778159550626_u671.png"
+    ],
+    "maxQty": 1,
+    "inStock": true
+  }
+]
