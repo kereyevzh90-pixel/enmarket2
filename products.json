@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "movfwjxy00cdc",
+    "name": "тест",
+    "brand": null,
+    "price": 3,
+    "oldPrice": 3,
+    "description": "",
+    "category": "men",
+    "sizes": [
+      "36"
+    ],
+    "badge": null,
+    "image": "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1778155456047_ntq0.png",
+    "images": [
+      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1778155456047_ntq0.png",
+      "https://raw.githubusercontent.com/kereyevzh90-pixel/enmarket2/main/images/products/1778155465553_jk9y.png"
+    ],
+    "maxQty": 2,
+    "inStock": true
+  }
+]
