@@ -51,7 +51,46 @@
   <section class="catalog" id="catalog">
     <div class="container catalog__inner">
 
-      <!-- LEFT SIDEBAR -->
+      <!-- MAIN CONTENT -->
+      <div class="catalog__right">
+
+        <!-- Sub-tabs -->
+        <div class="catalog__tabs">
+          <button class="ctab active" onclick="setTab(this,'women')">Женщинам</button>
+          <button class="ctab" onclick="setTab(this,'men')">Мужчинам</button>
+          <button class="ctab" onclick="setTab(this,'kids')">Детям</button>
+        </div>
+
+        <!-- FEATURED CAROUSEL -->
+        <div class="featured" id="featured">
+          <div class="featured__wrap">
+            <div class="featured__track" id="featuredTrack"></div>
+          </div>
+          <button class="featured__arrow featured__arrow--prev" onclick="featSlide(-1)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button class="featured__arrow featured__arrow--next" onclick="featSlide(1)">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <div class="featured__dots" id="featuredDots"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-state" id="emptyState" style="display:none">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <h3>Каталог пока пуст</h3>
+          <p>Скоро здесь появятся новые товары</p>
+        </div>
+
+        <!-- Grid -->
+        <div class="products-grid" id="productsGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM CATEGORIES -->
+  <section class="bottom-cats">
+    <div class="container">
       <aside class="sidebar-cats">
         <div class="scat-block">
           <div class="scat-title" onclick="filterCat('')">Все товары</div>
@@ -99,41 +138,6 @@
           <div class="scat-title scat-sale" onclick="filterCat('sale')">Распродажа</div>
         </div>
       </aside>
-
-      <!-- RIGHT CONTENT -->
-      <div class="catalog__right">
-
-        <!-- Sub-tabs -->
-        <div class="catalog__tabs">
-          <button class="ctab active" onclick="setTab(this,'women')">Женщинам</button>
-          <button class="ctab" onclick="setTab(this,'men')">Мужчинам</button>
-          <button class="ctab" onclick="setTab(this,'kids')">Детям</button>
-        </div>
-
-        <!-- FEATURED CAROUSEL -->
-        <div class="featured" id="featured">
-          <div class="featured__wrap">
-            <div class="featured__track" id="featuredTrack"></div>
-          </div>
-          <button class="featured__arrow featured__arrow--prev" onclick="featSlide(-1)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-          </button>
-          <button class="featured__arrow featured__arrow--next" onclick="featSlide(1)">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-          </button>
-          <div class="featured__dots" id="featuredDots"></div>
-        </div>
-
-        <!-- Empty state -->
-        <div class="empty-state" id="emptyState" style="display:none">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-          <h3>Каталог пока пуст</h3>
-          <p>Скоро здесь появятся новые товары</p>
-        </div>
-
-        <!-- Grid -->
-        <div class="products-grid" id="productsGrid"></div>
-      </div>
     </div>
   </section>
 
