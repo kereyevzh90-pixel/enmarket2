@@ -99,7 +99,8 @@ js/admin.js             — логика админки (GitHub API, CRUD тов
 
 ## Supabase — авторизация и данные пользователей
 - Клиент инициализируется в `index.html` как `window._supa`
-- Anon key: `sb_publishable_3yNYLodMrc61JS6HcYxvnw_H13iSZFn`
+- Anon key (legacy JWT): `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhyY3J1b214cWhxc2tobWNwb3BzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxNDk2OTQsImV4cCI6MjA5MzcyNTY5NH0.akiSu4k2WrAt4XCowWj2f1a7rRZy-dbdNNhA1WauP-Y`
+- Важно: использовать Legacy JWT ключ, не новый `sb_publishable_` формат — старая версия SDK его не поддерживает
 - Email confirmation отключён — пользователи входят сразу после регистрации
 - Redirect URL: `https://enmarket2.vercel.app`
 
@@ -140,7 +141,9 @@ js/admin.js             — логика админки (GitHub API, CRUD тов
 ## Избранное
 - Кнопка ♡ на карточке товара — добавляет в избранное (требует авторизации)
 - Кнопка ♡ в хедере открывает боковую панель с избранными товарами
+- На иконке ♡ в хедере показывается счётчик (красная точка с числом, как у корзины)
 - Из панели можно добавить товар в корзину или убрать из избранного
+- Функция `renderFavsCount()` обновляет счётчик на иконке (`id="favsCount"`)
 
 ## Уведомления о цене
 - Кнопка 🔔 появляется на карточке товара при наведении
