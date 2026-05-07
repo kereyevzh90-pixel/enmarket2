@@ -406,7 +406,7 @@
       if (pwd !== pwd2)   { err.textContent = 'Пароли не совпадают'; return; }
       const btn = document.querySelector('#authRegView .auth-btn');
       btn.disabled = true; btn.textContent = 'Загрузка...';
-      const { error } = await _supa.auth.signUp({ email, password: pwd });
+      const { error } = await _supa.auth.signUp({ email, password: pwd, options: { emailRedirectTo: 'https://enmarket2.vercel.app' } });
       btn.disabled = false; btn.textContent = 'Зарегистрироваться';
       if (error) { err.textContent = error.message; return; }
       document.getElementById('authSuccessMsg').textContent = 'Письмо с подтверждением отправлено на ' + email;
