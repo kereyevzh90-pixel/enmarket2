@@ -530,7 +530,6 @@ async function initSupabaseSync() {
   if (currentUser) {
     await loadFavsFromSupabase();
     await syncCartOnLogin();
-    renderGrid(applyFiltersResult());
     renderFavsCount();
   }
 }
