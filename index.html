@@ -137,6 +137,9 @@
         <div class="scat-block">
           <div class="scat-title scat-sale" onclick="filterCat('sale')">Распродажа</div>
         </div>
+        <div class="scat-block scat-auth">
+          <button class="scat-auth-btn" id="authNavBtn" onclick="openAuth('register')">Войти / Регистрация</button>
+        </div>
       </aside>
     </div>
   </section>
@@ -316,6 +319,129 @@
     </div>
   </div>
 
+  <!-- AUTH MODAL -->
+  <div class="auth-overlay" id="authOverlay" onclick="closeAuth(event)">
+    <div class="auth-modal" id="authModal">
+      <button class="auth-modal__close" onclick="closeAuth()">✕</button>
+
+      <!-- Register -->
+      <div id="authRegView">
+        <h2 class="auth-modal__title">Регистрация</h2>
+        <p class="auth-modal__sub">Создайте аккаунт в Aiko Sarken</p>
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="regEmail" placeholder="your@email.com" />
+        </div>
+        <div class="auth-field">
+          <label>Пароль</label>
+          <input type="password" id="regPassword" placeholder="Минимум 6 символов" />
+        </div>
+        <div class="auth-field">
+          <label>Повторите пароль</label>
+          <input type="password" id="regPassword2" placeholder="Повторите пароль" />
+        </div>
+        <div class="auth-error" id="regError"></div>
+        <button class="auth-btn" onclick="doRegister()">Зарегистрироваться</button>
+        <p class="auth-switch">Уже есть аккаунт? <a href="#" onclick="switchAuth('login')">Войти</a></p>
+      </div>
+
+      <!-- Login -->
+      <div id="authLoginView" style="display:none">
+        <h2 class="auth-modal__title">Вход</h2>
+        <p class="auth-modal__sub">Войдите в свой аккаунт</p>
+        <div class="auth-field">
+          <label>Email</label>
+          <input type="email" id="loginEmail" placeholder="your@email.com" />
+        </div>
+        <div class="auth-field">
+          <label>Пароль</label>
+          <input type="password" id="loginPwd" placeholder="Ваш пароль" />
+        </div>
+        <div class="auth-error" id="loginError"></div>
+        <button class="auth-btn" onclick="doLogin()">Войти</button>
+        <p class="auth-switch">Нет аккаунта? <a href="#" onclick="switchAuth('register')">Зарегистрироваться</a></p>
+      </div>
+
+      <!-- Success -->
+      <div id="authSuccessView" style="display:none">
+        <div class="auth-success-icon">✓</div>
+        <h2 class="auth-modal__title">Готово!</h2>
+        <p class="auth-modal__sub" id="authSuccessMsg"></p>
+        <button class="auth-btn" onclick="closeAuth()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const _supa = supabase.createClient(
+      'https://xrcruomxqhqskhmcpops.supabase.co',
+      'sb_publishable_3yNYLodMrc61JS6HcYxvnw_H13iSZFn'
+    );
+
+    function openAuth(view) {
+      switchAuth(view || 'register');
+      document.getElementById('authOverlay').classList.add('open');
+    }
+    function closeAuth(e) {
+      if (e && e.target !== document.getElementById('authOverlay')) return;
+      document.getElementById('authOverlay').classList.remove('open');
+      document.getElementById('regError').textContent = '';
+      document.getElementById('loginError').textContent = '';
+    }
+    function switchAuth(view) {
+      document.getElementById('authRegView').style.display   = view === 'register' ? '' : 'none';
+      document.getElementById('authLoginView').style.display = view === 'login'    ? '' : 'none';
+      document.getElementById('authSuccessView').style.display = 'none';
+    }
+
+    async function doRegister() {
+      const email = document.getElementById('regEmail').value.trim();
+      const pwd   = document.getElementById('regPassword').value;
+      const pwd2  = document.getElementById('regPassword2').value;
+      const err   = document.getElementById('regError');
+      err.textContent = '';
+      if (!email) { err.textContent = 'Введите email'; return; }
+      if (pwd.length < 6) { err.textContent = 'Пароль минимум 6 символов'; return; }
+      if (pwd !== pwd2)   { err.textContent = 'Пароли не совпадают'; return; }
+      const btn = document.querySelector('#authRegView .auth-btn');
+      btn.disabled = true; btn.textContent = 'Загрузка...';
+      const { error } = await _supa.auth.signUp({ email, password: pwd });
+      btn.disabled = false; btn.textContent = 'Зарегистрироваться';
+      if (error) { err.textContent = error.message; return; }
+      document.getElementById('authSuccessMsg').textContent = 'Письмо с подтверждением отправлено на ' + email;
+      switchAuth('success');
+      document.getElementById('authSuccessView').style.display = '';
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value.trim();
+      const pwd   = document.getElementById('loginPwd').value;
+      const err   = document.getElementById('loginError');
+      err.textContent = '';
+      if (!email || !pwd) { err.textContent = 'Заполните все поля'; return; }
+      const btn = document.querySelector('#authLoginView .auth-btn');
+      btn.disabled = true; btn.textContent = 'Загрузка...';
+      const { data, error } = await _supa.auth.signInWithPassword({ email, password: pwd });
+      btn.disabled = false; btn.textContent = 'Войти';
+      if (error) { err.textContent = error.message; return; }
+      document.getElementById('authSuccessMsg').textContent = 'Добро пожаловать, ' + (data.user.email) + '!';
+      switchAuth('success');
+      document.getElementById('authSuccessView').style.display = '';
+      updateAuthBtn(data.user);
+    }
+
+    function updateAuthBtn(user) {
+      const btn = document.getElementById('authNavBtn');
+      if (!btn) return;
+      if (user) {
+        btn.textContent = user.email.split('@')[0];
+        btn.onclick = async () => { await _supa.auth.signOut(); btn.textContent = 'Войти'; btn.onclick = () => openAuth('login'); };
+      }
+    }
+
+    _supa.auth.getUser().then(({ data }) => { if (data?.user) updateAuthBtn(data.user); });
+  </script>
   <script src="js/main.js"></script>
 </body>
 </html>
